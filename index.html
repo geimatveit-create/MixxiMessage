@@ -25,7 +25,7 @@
         .auth-card { width: 420px; background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 24px; padding: 40px; box-shadow: 0 30px 60px rgba(0,0,0,0.9), 0 0 40px var(--active-glow); display: flex; flex-direction: column; gap: 20px; }
         .auth-logo-container { display: flex; justify-content: center; margin-bottom: 5px; }
         .auth-card h2 { font-size: 24px; color: #fff; text-align: center; font-weight: 700; }
-        .auth-card p { font-size: 13px; color: var(--text-muted); text-align: center; margin-top: -10px; }
+        .auth-card p { font-size: 13px; color: var(--text-muted); text-align: center; margin-top: -10px; line-height: 1.4; }
 
         .auth-tabs { display: flex; background: var(--bg-dark); border-radius: 12px; padding: 4px; border: 1px solid var(--border-color); }
         .auth-tab { flex: 1; padding: 10px; text-align: center; font-size: 13px; font-weight: 600; color: var(--text-muted); cursor: pointer; border-radius: 9px; transition: 0.2s; }
@@ -67,15 +67,21 @@
         .avatar.online::after { content: ''; position: absolute; bottom: 2px; right: 2px; width: 11px; height: 11px; background: #00ff66; border: 2px solid var(--bg-panel); border-radius: 50%; z-index: 2; }
         .avatar.offline::after { content: ''; position: absolute; bottom: 2px; right: 2px; width: 11px; height: 11px; background: #555; border: 2px solid var(--bg-panel); border-radius: 50%; z-index: 2; }
 
-        .main-content-area { flex: 1; display: flex; flex-direction: column; background: var(--bg-dark); }
+        .main-content-area { flex: 1; display: flex; flex-direction: column; background: var(--bg-dark); position: relative; }
         .content-view { display: none; flex: 1; flex-direction: column; height: 100%; }
         .content-view.active { display: flex; }
 
-        .view-header { padding: 16px 28px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; background: var(--bg-panel); }
+        .view-header { padding: 16px 28px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; background: var(--bg-panel); position: relative; }
         .header-actions { display: flex; gap: 10px; align-items: center; }
         .icon-btn { background: var(--bg-dark); border: 1px solid var(--border-color); width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
         .icon-btn:hover { border-color: var(--active-color); background: var(--bg-hover); }
         .icon-btn svg { width: 18px; height: 18px; fill: var(--text-main); }
+
+        /* ВЫПАДАЮЩЕЕ МЕНЮ ТРИ ТОЧКИ */
+        .dropdown-menu { position: absolute; top: 65px; right: 20px; width: 220px; background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 14px; box-shadow: 0 15px 35px rgba(0,0,0,0.8); z-index: 100; display: none; flex-direction: column; overflow: hidden; padding: 6px; }
+        .dropdown-item { padding: 10px 14px; font-size: 13px; color: #fff; cursor: pointer; border-radius: 8px; transition: 0.2s; display: flex; align-items: center; gap: 8px; }
+        .dropdown-item:hover { background: var(--bg-hover); color: var(--active-color); }
+        .dropdown-item.danger:hover { background: #331111; color: #ff3333; }
 
         .chat-messages { flex: 1; padding: 28px; overflow-y: auto; display: flex; flex-direction: column; gap: 18px; }
         .message { max-width: 60%; padding: 14px 18px; border-radius: 16px; font-size: 14px; line-height: 1.5; word-break: break-word; }
@@ -89,11 +95,11 @@
 
         /* МОДАЛЬНЫЕ ОКНА */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 2000; display: none; justify-content: center; align-items: center; }
-        .modal-card { width: 420px; background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 20px; padding: 25px; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 20px 40px rgba(0,0,0,0.8); }
+        .modal-card { width: 440px; background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 20px; padding: 25px; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 20px 40px rgba(0,0,0,0.8); max-height: 90vh; overflow-y: auto; }
         .modal-card h3 { font-size: 18px; color: #fff; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
         .modal-row { display: flex; flex-direction: column; gap: 6px; }
         .modal-row label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
-        .modal-select { padding: 10px; background: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 10px; color: #fff; font-size: 13px; outline: none; width: 100%; cursor: pointer; }
+        .modal-select, .modal-input { padding: 10px 14px; background: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 10px; color: #fff; font-size: 13px; outline: none; width: 100%; }
 
         /* КАСТОМНЫЙ ПОПАП */
         .custom-popup-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); backdrop-filter: blur(6px); z-index: 3000; display: none; justify-content: center; align-items: center; }
@@ -189,8 +195,25 @@
                 <div id="modalSessionsList" style="display:flex; flex-direction:column; gap:6px; max-height:100px; overflow-y:auto;"></div>
             </div>
 
-            <div class="modal-row" id="banActionSection" style="display:none; margin-top:5px;">
-                <button class="danger-btn" id="modalBanBtn" style="width:100%;">Забанить пользователя</button>
+            <!-- БЛОК БАНА С НАСТРОЙКОЙ СРОКА И ПРИЧИНЫ -->
+            <div class="modal-row" id="banActionSection" style="display:none; margin-top:5px; border-top:1px solid var(--border-color); padding-top:10px;">
+                <label style="color:#ff3333; font-weight:700;">Параметры блокировки</label>
+                <input type="text" class="modal-input" id="banReasonInput" placeholder="Причина бана (обязательно)" style="margin-top:4px;">
+                
+                <div style="display:flex; align-items:center; gap:8px; margin-top:8px;">
+                    <input type="checkbox" id="banForeverCheckbox" checked style="width:16px; height:16px; accent-color:var(--active-color); cursor:pointer;">
+                    <label for="banForeverCheckbox" style="cursor:pointer; color:#fff; text-transform:none; font-size:13px;">Забанить навсегда</label>
+                </div>
+
+                <div id="banDurationContainer" style="display:none; flex-direction:column; gap:8px; margin-top:8px; background:var(--bg-dark); padding:10px; border-radius:10px; border:1px solid var(--border-color);">
+                    <div style="display:flex; gap:10px;">
+                        <div style="flex:1;"><label style="font-size:10px;">Дни (макс. 9000)</label><input type="number" class="modal-input" id="banDays" min="0" max="9000" value="0"></div>
+                        <div style="flex:1;"><label style="font-size:10px;">Часы (макс. 23)</label><input type="number" class="modal-input" id="banHours" min="0" max="23" value="0"></div>
+                        <div style="flex:1;"><label style="font-size:10px;">Мин. (макс. 59)</label><input type="number" class="modal-input" id="banMinutes" min="0" max="59" value="0"></div>
+                    </div>
+                </div>
+
+                <button class="danger-btn" id="modalBanBtn" style="width:100%; margin-top:10px;">Забанить пользователя</button>
             </div>
 
             <div class="modal-row" id="unbanActionSection" style="display:none; margin-top:5px;">
@@ -249,8 +272,18 @@
                         <button class="icon-btn" id="openChatAdminModalBtn" title="Управление пользователем" style="display:none;"><svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg></button>
                         <button class="icon-btn" id="startAudioCallBtn" title="Аудиозвонок"><svg viewBox="0 0 24 24"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.75 0 .99-.65.99-1.19v-3.44c0-.54-.45-.99-.99-.99z"/></svg></button>
                         <button class="icon-btn" id="startVideoCallBtn" title="Видеозвонок"><svg viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg></button>
+                        <!-- Кнопка три точки для меню чата -->
+                        <button class="icon-btn" id="chatOptionsMenuBtn" title="Меню чата"><svg viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg></button>
+                    </div>
+
+                    <!-- Выпадающее меню чата -->
+                    <div class="dropdown-menu" id="chatDropdownMenu">
+                        <div class="dropdown-item" id="menuClearChat">🧹 Очистить чат</div>
+                        <div class="dropdown-item danger" id="menuDeleteChat">🗑️ Удалить чат</div>
+                        <div class="dropdown-item danger" id="menuBlockUser">🚫 Заблокировать</div>
                     </div>
                 </div>
+
                 <div class="chat-messages" id="messageContainer">
                     <div class="message incoming">Выберите друга слева для начала общения! 🚀</div>
                 </div>
@@ -334,7 +367,6 @@
             }
         }
 
-        // Звук вызова в стиле Discord ( Web Audio API )
         function playDiscordRingTone() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -343,8 +375,8 @@
                     const osc = audioCtx.createOscillator();
                     const gain = audioCtx.createGain();
                     osc.type = 'sine';
-                    osc.frequency.setValueAtTime(440, audioCtx.currentTime); // Ля 1-й тон
-                    osc.frequency.setValueAtTime(480, audioCtx.currentTime + 0.15); // Ля 2-й тон
+                    osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+                    osc.frequency.setValueAtTime(480, audioCtx.currentTime + 0.15);
                     gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
                     gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
                     osc.connect(gain);
@@ -413,23 +445,34 @@
         function checkAndInitUser(username) {
             let bans = getBansDb();
             if (bans[username]) {
-                showBannedScreen();
-                localStorage.removeItem('mixxi_current_user');
-                return;
+                let banData = bans[username];
+                // Проверка истек ли бан по времени
+                if (!banData.forever && banData.expiresAt && Date.now() > banData.expiresAt) {
+                    delete bans[username];
+                    setBansDb(bans);
+                } else {
+                    showBannedScreen(banData);
+                    localStorage.removeItem('mixxi_current_user');
+                    return;
+                }
             }
             currentUser = username;
             registerSession(username);
             initApp(username);
         }
 
-        function showBannedScreen() {
+        function showBannedScreen(banData) {
             authOverlay.style.display = 'flex';
             appWindow.style.display = 'none';
             document.getElementById('authTabsContainer').style.display = 'none';
             document.getElementById('userGroupBlock').style.display = 'none';
             document.getElementById('passGroupBlock').style.display = 'none';
+            
             authTitle.innerText = "Доступ ограничен";
-            authSubtitle.innerText = "Ваш аккаунт заблокирован администратором или создателем";
+            let reasonText = banData.reason ? `Причина: ${banData.reason}` : "Причина не указана";
+            let timeText = banData.forever ? "Блокировка навсегда" : `До: ${new Date(banData.expiresAt).toLocaleString()}`;
+            authSubtitle.innerHTML = `Ваш аккаунт заблокирован администратором или создателем.<br><br><b>${reasonText}</b><br><span style="color:var(--active-color);">${timeText}</span>`;
+            
             authErrorMsg.innerText = "⛔ Вы забанены!";
             authSubmitBtn.innerText = "Понятно";
             authSubmitBtn.onclick = () => { location.reload(); };
@@ -444,14 +487,19 @@
             setSessionsDb(sessions);
         }
 
-        // Проверка банов и сессий в реальном времени
         setInterval(() => {
             if (!currentUser) return;
             let bans = getBansDb();
             if (bans[currentUser]) {
-                localStorage.removeItem('mixxi_current_user');
-                showBannedScreen();
-                return;
+                let banData = bans[currentUser];
+                if (!banData.forever && banData.expiresAt && Date.now() > banData.expiresAt) {
+                    delete bans[currentUser];
+                    setBansDb(bans);
+                } else {
+                    localStorage.removeItem('mixxi_current_user');
+                    showBannedScreen(banData);
+                    return;
+                }
             }
             let sessions = getSessionsDb();
             let userSess = sessions[currentUser] || [];
@@ -670,10 +718,94 @@
             loadMessages();
         }
 
+        // Логика выпадающего меню чата (три точки)
+        const chatOptionsMenuBtn = document.getElementById('chatOptionsMenuBtn');
+        const chatDropdownMenu = document.getElementById('chatDropdownMenu');
+
+        chatOptionsMenuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            chatDropdownMenu.style.display = chatDropdownMenu.style.display === 'flex' ? 'none' : 'flex';
+        });
+
+        window.addEventListener('click', () => {
+            chatDropdownMenu.style.display = 'none';
+        });
+
+        // Очистить чат
+        document.getElementById('menuClearChat').addEventListener('click', () => {
+            if (!activeChatUser) return;
+            showCustomPopup("Очистить чат", "Вы действительно хотите удалить всю историю сообщений в этом чате?", () => {
+                let messagesDb = getMessagesDb();
+                let chatKey = getChatKey(currentUser, activeChatUser);
+                delete messagesDb[chatKey];
+                setMessagesDb(messagesDb);
+                loadMessages();
+            });
+        });
+
+        // Удалить чат (удалить друга из списка друзей)
+        document.getElementById('menuDeleteChat').addEventListener('click', () => {
+            if (!activeChatUser) return;
+            showCustomPopup("Удалить чат", `Удалить чат с пользователем @${activeChatUser}? Он пропадет из списка ваших чатов.`, () => {
+                let social = getSocialDb();
+                if (social[currentUser]) {
+                    social[currentUser].friends = social[currentUser].friends.filter(f => f !== activeChatUser);
+                }
+                if (social[activeChatUser]) {
+                    social[activeChatUser].friends = social[activeChatUser].friends.filter(f => f !== currentUser);
+                }
+                setSocialDb(social);
+                
+                activeChatUser = null;
+                document.getElementById('activeChatName').innerText = "Выберите чат";
+                document.getElementById('activeChatStatus').innerText = "начните общение";
+                document.getElementById('activeChatAvatar').innerText = "M";
+                document.getElementById('userInput').disabled = true;
+                document.getElementById('messageContainer').innerHTML = `<div class="message incoming">Выберите друга слева для начала общения! 🚀</div>`;
+                document.getElementById('openChatAdminModalBtn').style.display = 'none';
+                
+                renderChatsList();
+            });
+        });
+
+        // Заблокировать пользователя (удалить из друзей + кик сессий)
+        document.getElementById('menuBlockUser').addEventListener('click', () => {
+            if (!activeChatUser) return;
+            let target = activeChatUser;
+            showCustomPopup("Блокировка", `Заблокировать пользователя @${target}? Вы удалите его из друзей и прервете связь.`, () => {
+                let social = getSocialDb();
+                if (social[currentUser]) social[currentUser].friends = social[currentUser].friends.filter(f => f !== target);
+                if (social[target]) social[target].friends = social[target].friends.filter(f => f !== currentUser);
+                setSocialDb(social);
+
+                let sessions = getSessionsDb();
+                if (sessions[target]) sessions[target] = [];
+                setSessionsDb(sessions);
+
+                activeChatUser = null;
+                document.getElementById('activeChatName').innerText = "Выберите чат";
+                document.getElementById('activeChatStatus').innerText = "начните общение";
+                document.getElementById('userInput').disabled = true;
+                document.getElementById('messageContainer').innerHTML = `<div class="message incoming">Пользователь заблокирован.</div>`;
+                document.getElementById('openChatAdminModalBtn').style.display = 'none';
+                renderChatsList();
+            });
+        });
+
         const chatAdminModal = document.getElementById('chatAdminModal');
+        const banForeverCheckbox = document.getElementById('banForeverCheckbox');
+        const banDurationContainer = document.getElementById('banDurationContainer');
+
+        banForeverCheckbox.addEventListener('change', () => {
+            banDurationContainer.style.display = banForeverCheckbox.checked ? 'none' : 'flex';
+        });
+
         document.getElementById('openChatAdminModalBtn').addEventListener('click', () => {
             if (!activeChatUser) return;
             document.getElementById('modalTargetTitle').innerText = `Управление: @${activeChatUser}`;
+            document.getElementById('banReasonInput').value = '';
+            banForeverCheckbox.checked = true;
+            banDurationContainer.style.display = 'none';
 
             let myRole = getUserRole(currentUser);
             let targetRole = getUserRole(activeChatUser);
@@ -738,7 +870,6 @@
             container.innerHTML = html;
         }
 
-        // МГНОВЕННЫЙ КИК СЕССИИ (без лишних окон)
         window.kickTargetSessionInstant = function(sId) {
             let myRole = getUserRole(currentUser);
             if (myRole === 'user') return;
@@ -760,17 +891,46 @@
             showCustomPopup("Роль изменена", `Роль @${activeChatUser} изменена на: ${newRole}`);
         });
 
-        // МГНОВЕННЫЙ БАН С ВЫБРОСОМ
+        // Бан с учетом причины, галочки "навсегда" и подсчета минут/часов/дней
         document.getElementById('modalBanBtn').addEventListener('click', () => {
             let myRole = getUserRole(currentUser);
             if (myRole === 'user' || myRole === 'moderator') return;
             if (activeChatUser === 'mixxi') return;
 
+            let reason = document.getElementById('banReasonInput').value.trim();
+            if (!reason) {
+                showCustomPopup("Ошибка", "Пожалуйста, укажите причину бана!");
+                return;
+            }
+
+            let forever = banForeverCheckbox.checked;
+            let expiresAt = null;
+
+            if (!forever) {
+                let days = parseInt(document.getElementById('banDays').value) || 0;
+                let hours = parseInt(document.getElementById('banHours').value) || 0;
+                let minutes = parseInt(document.getElementById('banMinutes').value) || 0;
+
+                if (days > 9000) days = 9000;
+                if (hours > 23) hours = 23;
+                if (minutes > 59) minutes = 59;
+
+                let totalMs = (days * 24 * 60 + hours * 60 + minutes) * 60 * 1000;
+                if (totalMs <= 0) {
+                    showCustomPopup("Ошибка", "Укажите срок бана больше 0 минут!");
+                    return;
+                }
+                expiresAt = Date.now() + totalMs;
+            }
+
             let bans = getBansDb();
-            bans[activeChatUser] = true;
+            bans[activeChatUser] = {
+                reason: reason,
+                forever: forever,
+                expiresAt: expiresAt
+            };
             setBansDb(bans);
             
-            // Также очищаем сессии забаненного юзера, чтобы его сразу выкинуло
             let sessions = getSessionsDb();
             sessions[activeChatUser] = [];
             setSessionsDb(sessions);
@@ -830,7 +990,6 @@
         sendBtn.addEventListener('click', sendMessage);
         input.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
 
-        // УПРАВЛЕНИЕ ЗВОНКАМИ И ВИДЕОПОТОКОМ
         let localStream = null;
         const callScreen = document.getElementById('callScreen');
         const localVideo = document.getElementById('localVideo');
@@ -876,7 +1035,6 @@
             document.getElementById('toggleMicBtn').classList.toggle('off', isMicMuted);
         });
 
-        // Исправление отключения видео: кнопка полностью выключает видеопоток и скрывает блок
         document.getElementById('toggleVideoBtn').addEventListener('click', async () => {
             isVideoOff = !isVideoOff;
             
