@@ -1108,8 +1108,8 @@
                     reason: reason,
                     forever: forever,
                     expiresAt: expiresAt,
-                    bannedBy: currentUser,     // <--- Юзернейм того, кто забанил
-                    bannedAt: Date.now()       // <--- Точное время выдачи бана
+                    bannedBy: currentUser,
+                    bannedAt: Date.now()
                 };
                 setBansDb(bans);
                 
@@ -1521,7 +1521,7 @@
             let myData = social[currentUser];
             let senderData = social[fromUser];
             myData.incomingRequests = myData.incomingRequests.filter(u => u !== fromUser);
-            if (!myData.friends.includes(fromUser)) myData.friends.path ? myData.friends.push(fromUser) : myData.friends.push(fromUser);
+            if (!myData.friends.includes(fromUser)) myData.friends.push(fromUser);
             if (senderData) {
                 senderData.outgoingRequests = senderData.outgoingRequests.filter(u => u !== currentUser);
                 if (!senderData.friends.includes(currentUser)) senderData.friends.push(currentUser);
