@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mixxi Messenger Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-darker: #070707;
+            --bg-dark: #0f0f0f;
+            --bg-panel: #141414;
+            --bg-hover: #1c1c1c;
+            --active-color: #ff5500;
+            --active-glow: rgba(255, 85, 0, 0.35);
+            --text-main: #f3f3f3;
+            --text-muted: #7e7e7e;
+            --border-color: #202020;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-darker);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            background-image: radial-gradient(circle at 50% 20%, #1f0e06 0%, var(--bg-darker) 70%);
+        }
+
+        /* ОКНО АВТОРИЗАЦИИ */
+        .auth-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(5, 5, 5, 0.92);
+            backdrop-filter: blur(12px);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .auth-card {
+            width: 420px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.9), 0 0 40px var(--active-glow);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .auth-logo-container { display: flex; justify-content: center; margin-bottom: 5px; }
+        .auth-card h2 { font-size: 24px; color: #fff; text-align: center; font-weight: 700; }
+        .auth-card p { font-size: 13px; color: var(--text-muted); text-align: center; margin-top: -10px; }
+
+        .auth-tabs {
+            display: flex; background: var(--bg-dark); border-radius: 12px; padding: 4px; border: 1px solid var(--border-color);
+        }
+        .auth-tab {
+            flex: 1; padding: 10px; text-align: center; font-size: 13px; font-weight: 600;
+            color: var(--text-muted); cursor: pointer; border-radius: 9px; transition: 0.2s;
+        }
+        .auth-tab.active { background: var(--bg-panel); color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.5); }
+
+        .auth-input-group { display: flex; flex-direction: column; gap: 6px; }
+        .auth-input-group label { font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px; }
+
+        .auth-input {
+            width: 100%; padding: 12px 16px; background: var(--bg-dark); border: 1px solid var(--border-color);
+            border-radius: 12px; color: #fff; font-size: 14px; outline: none; transition: 0.2s;
+        }
+        .auth-input:focus { border-color: var(--active-color); box-shadow: 0 0 10px var(--active-glow); }
+
+        .auth-btn {
+            width: 100%; padding: 14px; background: var(--active-color); border: none; border-radius: 12px;
+            color: #fff; font-weight: 600; font-size: 15px; cursor: pointer; transition: 0.2s;
+            box-shadow: 0 0 20px var(--active-glow); margin-top: 5px;
+        }
+        .auth-btn:hover { filter: brightness(1.15); }
+
+        .auth-error { color: #ff3333; font-size: 12px; text-align: center; min-height: 15px; }
+
+        /* ОСНОВНОЕ ОКНО ПРИЛОЖЕНИЯ */
+        .app-window {
+            width: 95vw; max-width: 1400px; height: 90vh; background: var(--bg-dark);
+            border: 1px solid var(--border-color); border-radius: 24px; display: none;
+            overflow: hidden; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.95), 0 0 40px var(--active-glow);
+            position: relative;
+        }
+
+        .nav-sidebar {
+            width: 80px; background: var(--bg-darker); border-right: 1px solid var(--border-color);
+            display: flex; flex-direction: column; align-items: center; padding: 20px 0; gap: 15px;
+        }
+
+        .nav-logo {
+            width: 48px; height: 48px; background: linear-gradient(135deg, #ff5500, #ff9900);
+            border-radius: 16px; display: flex; align-items: center; justify-content: center;
+            font-weight: 700; color: #fff; font-size: 20px; box-shadow: 0 0 15px var(--active-glow); margin-bottom: 10px;
+        }
+
+        .nav-item {
+            width: 48px; height: 48px; border-radius: 14px; background: transparent; border: none;
+            display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; position: relative;
+        }
+        .nav-item svg { fill: var(--text-muted); width: 22px; height: 22px; transition: 0.3s; }
+        .nav-item:hover, .nav-item.active { background: var(--bg-hover); border-radius: 16px; }
+        .nav-item:hover svg, .nav-item.active svg { fill: var(--active-color); }
+        .nav-item.active::before {
+            content: ''; position: absolute; left: -16px; width: 4px; height: 24px;
+            background: var(--active-color); border-radius: 0 4px 4px 0;
+        }
+
+        .sidebar-panel { width: 340px; background: var(--bg-panel); border-right: 1px solid var(--border-color); display: none; flex-direction: column; }
+        .sidebar-panel.active { display: flex; }
+
+        .panel-header { padding: 22px 20px; font-weight: 700; font-size: 18px; border-bottom: 1px solid var(--border-color); color: #fff; }
+        .search-box { padding: 15px 20px; }
+        .search-box input {
+            width: 100%; padding: 11px 16px; background: var(--bg-dark); border: 1px solid var(--border-color);
+            border-radius: 12px; color: #fff; font-size: 13px; outline: none;
+        }
+
+        .panel-scroll-content { flex: 1; overflow-y: auto; padding: 0 12px; }
+        .list-card {
+            padding: 12px 14px; border-radius: 14px; display: flex; align-items: center; gap: 14px;
+            cursor: pointer; transition: 0.2s; margin-bottom: 6px;
+        }
+        .list-card:hover, .list-card.active { background: var(--bg-hover); }
+
+        .avatar {
+            width: 44px; height: 44px; background: linear-gradient(135deg, #ff5500, #ff9900);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 15px; color: #fff; position: relative; flex-shrink: 0;
+        }
+        .avatar.online::after {
+            content: ''; position: absolute; bottom: 2px; right: 2px; width: 10px; height: 10px;
+            background: #00ff66; border: 2px solid var(--bg-panel); border-radius: 50%;
+        }
+
+        .main-content-area { flex: 1; display: flex; flex-direction: column; background: var(--bg-dark); }
+        .content-view { display: none; flex: 1; flex-direction: column; height: 100%; }
+        .content-view.active { display: flex; }
+
+        .view-header {
+            padding: 16px 28px; border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; background: var(--bg-panel);
+        }
+
+        .chat-messages { flex: 1; padding: 28px; overflow-y: auto; display: flex; flex-direction: column; gap: 18px; }
+        .message { max-width: 60%; padding: 14px 18px; border-radius: 16px; font-size: 14px; line-height: 1.5; }
+        .message.incoming { background: var(--bg-panel); border: 1px solid var(--border-color); align-self: flex-start; color: #dedede; }
+        .message.outgoing { background: linear-gradient(135deg, #ff5500, #e04800); color: #fff; align-self: flex-end; }
+
+        .chat-input-area {
+            padding: 20px 28px; background: var(--bg-panel); border-top: 1px solid var(--border-color);
+            display: flex; gap: 14px; align-items: center;
+        }
+        .chat-input-area input {
+            flex: 1; padding: 14px 20px; background: var(--bg-dark); border: 1px solid var(--border-color);
+            border-radius: 14px; color: #fff; font-size: 14px; outline: none;
+        }
+        .send-btn {
+            background: var(--active-color); border: none; width: 48px; height: 48px;
+            border-radius: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+        }
+        .send-btn svg { fill: #fff; width: 18px; height: 18px; }
+
+        /* НАСТРОЙКИ */
+        .settings-container-pane {
+            padding: 35px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 20px; max-width: 950px;
+        }
+        .setting-section-title { font-size: 12px; text-transform: uppercase; color: var(--active-color); letter-spacing: 1px; margin-top: 10px; font-weight: 700; }
+        .setting-item-row {
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--bg-panel); border: 1px solid var(--border-color); padding: 16px 20px; border-radius: 14px; gap: 20px;
+        }
+        .setting-item-row h4 { font-size: 15px; color: #fff; margin-bottom: 2px; }
+        .setting-item-row p { font-size: 12px; color: var(--text-muted); }
+
+        select {
+            padding: 10px 14px; background: var(--bg-dark); border: 1px solid var(--border-color);
+            border-radius: 10px; color: #fff; font-size: 13px; outline: none; width: 280px;
+            cursor: pointer; text-overflow: ellipsis;
+        }
+        select option { background: var(--bg-dark); color: #fff; }
+
+        .danger-btn {
+            background: #ff3333; color: #fff; border: none; padding: 10px 18px;
+            border-radius: 10px; font-weight: 600; cursor: pointer; transition: 0.2s;
+        }
+        .danger-btn:hover { background: #e02828; }
+    </style>
+</head>
+<body>
+
+    <!-- ОКНО АВТОРИЗАЦИИ / РЕГИСТРАЦИИ -->
+    <div class="auth-overlay" id="authOverlay">
+        <div class="auth-card">
+            <div class="auth-logo-container">
+                <div class="nav-logo" style="margin:0;">M</div>
+            </div>
+            <h2 id="authTitle">Добро пожаловать</h2>
+            <p id="authSubtitle">Войдите в свой аккаунт Mixxi</p>
+
+            <div class="auth-tabs">
+                <div class="auth-tab active" id="tabLoginBtn">Вход</div>
+                <div class="auth-tab" id="tabRegisterBtn">Регистрация</div>
+            </div>
+
+            <div class="auth-input-group">
+                <label>Имя пользователя</label>
+                <input type="text" class="auth-input" id="authUsername" placeholder="Введите никнейм">
+            </div>
+
+            <div class="auth-input-group">
+                <label>Пароль</label>
+                <input type="password" class="auth-input" id="authPassword" placeholder="Введите пароль">
+            </div>
+
+            <div class="auth-error" id="authErrorMsg"></div>
+
+            <button class="auth-btn" id="authSubmitBtn">Войти в систему</button>
+        </div>
+    </div>
+
+    <!-- ОСНОВНОЙ ИНТЕРФЕЙС -->
+    <div class="app-window" id="appWindow">
+        <nav class="nav-sidebar">
+            <div class="nav-logo" id="userLogoBadge" title="Профиль">M</div>
+            <button class="nav-item active" id="navChats" title="Сообщения">
+                <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+            </button>
+            <button class="nav-item" id="navFriends" title="Контакты">
+                <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3z"/></svg>
+            </button>
+            <button class="nav-item" id="navSettings" title="Настройки">
+                <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36.25c-.59.24-1.13.56-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c-.5.38-1.03.7-1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c-.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+            </button>
+        </nav>
+
+        <!-- ПАНЕЛЬ ЧАТОВ -->
+        <div class="sidebar-panel active" id="panelChats">
+            <div class="panel-header">Сообщения</div>
+            <div class="search-box"><input type="text" placeholder="Поиск чатов..."></div>
+            <div class="panel-scroll-content">
+                <div class="list-card active">
+                    <div class="avatar online">AI</div>
+                    <div style="flex:1;">
+                        <h4 style="font-size:14px; color:#fff;">Mixxi Support</h4>
+                        <p style="font-size:12px; color:var(--text-muted);">Система активна!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ПАНЕЛЬ КОНТАКТОВ -->
+        <div class="sidebar-panel" id="panelFriends">
+            <div class="panel-header">Контакты</div>
+            <div class="search-box"><input type="text" placeholder="Поиск контактов..."></div>
+            <div class="panel-scroll-content">
+                <div class="list-card">
+                    <div class="avatar online">G</div>
+                    <div style="flex:1;">
+                        <h4 style="font-size:14px; color:#fff;">Gmoax</h4>
+                        <p style="font-size:12px; color:#00ff66;">В сети</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ОСНОВНАЯ ОБЛАСТЬ -->
+        <main class="main-content-area">
+            <!-- ВИД ЧАТА -->
+            <div class="content-view active" id="viewChat">
+                <div class="view-header">
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <div class="avatar online" style="width:38px;height:38px;font-size:13px;">AI</div>
+                        <div>
+                            <h3 style="font-size:15px; color:#fff;">Mixxi Support</h3>
+                            <p style="font-size:11px; color:#00ff66;">безопасное соединение</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-messages" id="messageContainer">
+                    <div class="message incoming">
+                        Добро пожаловать в мессенджер Mixxi! Вы вошли под своей учетной записью. 🚀
+                    </div>
+                </div>
+
+                <div class="chat-input-area">
+                    <input type="text" id="userInput" placeholder="Введите сообщение...">
+                    <button class="send-btn" id="sendBtn">
+                        <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ВИД НАСТРОЕК -->
+            <div class="content-view" id="viewSettings">
+                <div class="settings-container-pane">
+                    <h2 style="font-size: 22px; color: #fff;">Настройки устройства и системы</h2>
+                    
+                    <div class="setting-section-title">Аккаунт</div>
+                    <div class="setting-item-row">
+                        <div>
+                            <h4>Текущий пользователь</h4>
+                            <p id="currentUsernameDisplay">Загрузка...</p>
+                        </div>
+                        <button class="danger-btn" id="logoutBtn">Выйти из аккаунта</button>
+                    </div>
+
+                    <div class="setting-section-title">Аудио и Звук</div>
+                    <div class="setting-item-row">
+                        <div>
+                            <h4>Микрофон</h4>
+                            <p>Выбор устройства для записи голоса</p>
+                        </div>
+                        <select id="audioInputSelect">
+                            <option>Загрузка устройств...</option>
+                        </select>
+                    </div>
+
+                    <div class="setting-item-row">
+                        <div>
+                            <h4>Динамики / Наушники</h4>
+                            <p>Выбор устройства вывода звука</p>
+                        </div>
+                        <select id="audioOutputSelect">
+                            <option>Загрузка устройств...</option>
+                        </select>
+                    </div>
+
+                    <div class="setting-item-row">
+                        <div>
+                            <h4>AI Шумоподавление</h4>
+                            <p>Фильтрация посторонних шумов микрофона</p>
+                        </div>
+                        <select>
+                            <option>Включено (Максимальное)</option>
+                            <option>Отключено</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let isRegisterMode = false;
+        const authOverlay = document.getElementById('authOverlay');
+        const appWindow = document.getElementById('appWindow');
+        const tabLoginBtn = document.getElementById('tabLoginBtn');
+        const tabRegisterBtn = document.getElementById('tabRegisterBtn');
+        const authTitle = document.getElementById('authTitle');
+        const authSubtitle = document.getElementById('authSubtitle');
+        const authSubmitBtn = document.getElementById('authSubmitBtn');
+        const authUsername = document.getElementById('authUsername');
+        const authPassword = document.getElementById('authPassword');
+        const authErrorMsg = document.getElementById('authErrorMsg');
+        
+        const currentUsernameDisplay = document.getElementById('currentUsernameDisplay');
+        const userLogoBadge = document.getElementById('userLogoBadge');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        // Проверяем сессию при загрузке
+        const activeUser = localStorage.getItem('mixxi_current_user');
+        if (activeUser) {
+            initApp(activeUser);
+        }
+
+        tabLoginBtn.addEventListener('click', () => {
+            isRegisterMode = false;
+            tabLoginBtn.classList.add('active');
+            tabRegisterBtn.classList.remove('active');
+            authTitle.innerText = "Добро пожаловать";
+            authSubtitle.innerText = "Войдите в свой аккаунт Mixxi";
+            authSubmitBtn.innerText = "Войти в систему";
+            authErrorMsg.innerText = "";
+        });
+
+        tabRegisterBtn.addEventListener('click', () => {
+            isRegisterMode = true;
+            tabRegisterBtn.classList.add('active');
+            tabLoginBtn.classList.remove('active');
+            authTitle.innerText = "Регистрация";
+            authSubtitle.innerText = "Создайте новый профиль в Mixxi";
+            authSubmitBtn.innerText = "Зарегистрироваться";
+            authErrorMsg.innerText = "";
+        });
+
+        authSubmitBtn.addEventListener('click', () => {
+            const user = authUsername.value.trim();
+            const pass = authPassword.value.trim();
+
+            if (!user || !pass) {
+                authErrorMsg.innerText = "Заполните все поля!";
+                return;
+            }
+
+            let usersDb = JSON.parse(localStorage.getItem('mixxi_users_db') || '{}');
+
+            if (isRegisterMode) {
+                if (usersDb[user]) {
+                    authErrorMsg.innerText = "Такой пользователь уже существует!";
+                    return;
+                }
+                usersDb[user] = pass;
+                localStorage.setItem('mixxi_users_db', JSON.stringify(usersDb));
+                localStorage.setItem('mixxi_current_user', user);
+                initApp(user);
+            } else {
+                if (!usersDb[user] || usersDb[user] !== pass) {
+                    authErrorMsg.innerText = "Неверный логин или пароль!";
+                    return;
+                }
+                localStorage.setItem('mixxi_current_user', user);
+                initApp(user);
+            }
+        });
+
+        function initApp(username) {
+            authOverlay.style.display = 'none';
+            appWindow.style.display = 'flex';
+            currentUsernameDisplay.innerText = "@" + username;
+            userLogoBadge.innerText = username.charAt(0).toUpperCase();
+            loadAudioDevices();
+        }
+
+        logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('mixxi_current_user');
+            location.reload();
+        });
+
+        // Безопасная загрузка аудиоустройств без зависаний
+        async function loadAudioDevices() {
+            const micSelect = document.getElementById('audioInputSelect');
+            const speakerSelect = document.getElementById('audioOutputSelect');
+
+            try {
+                if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
+                    throw new Error("API не поддерживается");
+                }
+
+                // Запрашиваем разрешение мягко
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    stream.getTracks().forEach(track => track.stop()); // сразу останавливаем поток, нужен был только доступ
+                } catch (err) {
+                    console.log("Доступ к микрофону не предоставлен пользователем, но устройства загрузим.");
+                }
+
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                
+                micSelect.innerHTML = '';
+                speakerSelect.innerHTML = '';
+
+                devices.forEach(device => {
+                    const option = document.createElement('option');
+                    option.value = device.deviceId;
+                    option.text = device.label || `${device.kind === 'audioinput' ? 'Микрофон' : 'Динамики'} (${device.deviceId.slice(0, 5)}...)`;
+                    
+                    if (device.kind === 'audioinput') {
+                        micSelect.appendChild(option);
+                    } else if (device.kind === 'audiooutput') {
+                        speakerSelect.appendChild(option);
+                    }
+                });
+
+                if (micSelect.options.length === 0) micSelect.innerHTML = '<option value="">По умолчанию (Системный)</option>';
+                if (speakerSelect.options.length === 0) speakerSelect.innerHTML = '<option value="">По умолчанию (Системный)</option>';
+            } catch (e) {
+                micSelect.innerHTML = '<option value="">По умолчанию (Микрофон)</option>';
+                speakerSelect.innerHTML = '<option value="">По умолчанию (Динамики)</option>';
+            }
+        }
+
+        // Навигация по вкладкам
+        const navChats = document.getElementById('navChats');
+        const navFriends = document.getElementById('navFriends');
+        const navSettings = document.getElementById('navSettings');
+
+        const panelChats = document.getElementById('panelChats');
+        const panelFriends = document.getElementById('panelFriends');
+
+        const viewChat = document.getElementById('viewChat');
+        const viewSettings = document.getElementById('viewSettings');
+
+        function resetNav() {
+            navChats.classList.remove('active');
+            navFriends.classList.remove('active');
+            navSettings.classList.remove('active');
+            panelChats.classList.remove('active');
+            panelFriends.classList.remove('active');
+            viewChat.classList.remove('active');
+            viewSettings.classList.remove('active');
+        }
+
+        navChats.addEventListener('click', () => {
+            resetNav();
+            navChats.classList.add('active');
+            panelChats.classList.add('active');
+            viewChat.classList.add('active');
+        });
+
+        navFriends.addEventListener('click', () => {
+            resetNav();
+            navFriends.classList.add('active');
+            panelFriends.classList.add('active');
+            viewChat.classList.add('active');
+        });
+
+        navSettings.addEventListener('click', () => {
+            resetNav();
+            navSettings.classList.add('active');
+            viewSettings.classList.add('active');
+        });
+
+        // Отправка сообщений в чате
+        const input = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const container = document.getElementById('messageContainer');
+
+        function sendMessage() {
+            const txt = input.value.trim();
+            if (!txt) return;
+            const div = document.createElement('div');
+            div.className = 'message outgoing';
+            div.innerText = txt;
+            container.appendChild(div);
+            input.value = '';
+            container.scrollTop = container.scrollHeight;
+        }
+
+        sendBtn.addEventListener('click', sendMessage);
+        input.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+    </script>
+</body>
+</html>
