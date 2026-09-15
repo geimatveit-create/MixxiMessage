@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mixxi Messenger Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-darker: #070707;
+            --bg-dark: #0f0f0f;
+            --bg-panel: #141414;
+            --bg-hover: #1c1c1c;
+            --active-color: #ff5500;
+            --active-glow: rgba(255, 85, 0, 0.35);
+            --text-main: #f3f3f3;
+            --text-muted: #7e7e7e;
+            --border-color: #202020;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; user-select: none; }
+        body { background-color: var(--bg-darker); color: var(--text-main); height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; background-image: radial-gradient(circle at 50% 20%, #1f0e06 0%, var(--bg-darker) 70%); }
+
+        .auth-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(5, 5, 5, 0.92); backdrop-filter: blur(12px); z-index: 1000; display: flex; justify-content: center; align-items: center; }
+        .auth-card { width: 420px; background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 24px; padding: 40px; box-shadow: 0 30px 60px rgba(0,0,0,0.9), 0 0 40px var(--active-glow); display: flex; flex-direction: column; gap: 20px; }
+        .auth-logo-container { display: flex; justify-content: center; margin-bottom: 5px; }
+        .auth-card h2 { font-size: 24px; color: #fff; text-align: center; font-weight: 700; }
+        .auth-card p { font-size: 13px; color: var(--text-muted); text-align: center; margin-top: -10px; }
+
+        .auth-tabs { display: flex; background: var(--bg-dark); border-radius: 12px; padding: 4px; border: 1px solid var(--border-color); }
+        .auth-tab { flex: 1; padding: 10px; text-align: center; font-size: 13px; font-weight: 600; color: var(--text-muted); cursor: pointer; border-radius: 9px; transition: 0.2s; }
+        .auth-tab.active { background: var(--bg-panel); color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.5); }
+
+        .auth-input-group { display: flex; flex-direction: column; gap: 6px; }
+        .auth-input-group label { font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px; }
+        .auth-input { width: 100%; padding: 12px 16px; background: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 12px; color: #fff; font-size: 14px; outline: none; transition: 0.2s; }
+        .auth-input:focus { border-color: var(--active-color); box-shadow: 0 0 10px var(--active-glow); }
+
+        .auth-btn { width: 100%; padding: 14px; background: var(--active-color); border: none; border-radius: 12px; color: #fff; font-weight: 600; font-size: 15px; cursor: pointer; transition: 0.2s; box-shadow: 0 0 20px var(--active-glow); margin-top: 5px; }
+        .auth-btn:hover { filter: brightness(1.15); }
+        .auth-error { color: #ff3333; font-size: 12px; text-align: center; min-height: 15px; }
+
+        .app-window { width: 95vw; max-width: 1400px; height: 90vh; background: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 24px; display: none; overflow: hidden; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.95), 0 0 40px var(--active-glow); position: relative; }
+
+        .nav-sidebar { width: 80px; background: var(--bg-darker); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; padding: 20px 0; gap: 15px; }
+        .nav-logo { width: 48px; height: 48px; background: linear-gradient(135deg, #ff5500, #ff9900); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; font-size: 20px; box-shadow: 0 0 15px var(--active-glow); margin-bottom: 10px; }
+        .nav-item { width: 48px; height: 48px; border-radius: 14px; background: transparent; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; position: relative; }
+        .nav-item svg { fill: var(--text-muted); width: 22px; height: 22px; transition: 0.3s; }
+        .nav-item:hover, .nav-item.active { background: var(--bg-hover); border-radius: 16px; }
+        .nav-item:hover svg, .nav-item.active svg { fill: var(--active-color); }
+        .nav-item.active::before { content: ''; position: absolute; left: -16px; width: 4px; height: 24px; background: var(--active-color); border-radius: 0 4px 4px 0; }
+
+        .sidebar-panel { width: 340px; background: var(--bg-panel); border-right: 1px solid var(--border-color); display: none; flex-direction: column; }
+        .sidebar-panel.active { display: flex; }
+
+        .panel-header { padding: 22px 20px; font-weight: 700; font-size: 18px; border-bottom: 1px solid var(--border-color); color: #fff; }
+        .search-box { padding: 15px 20px 5px 20px; }
+        .search-box input { width: 100%; padding: 11px 16px; background: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 12px; color: #fff; font-size: 13px; outline: none; }
+
+        .panel-scroll-content { flex: 1; overflow-y: auto; padding: 12px; }
+        .list-card { padding: 12px 14px; border-radius: 14px; display: flex; align-items: center; gap: 14px; cursor: pointer; transition: 0.2s; margin-bottom: 6px; background: var(--bg-dark); border: 1px solid var(--border-color); }
+        .list-card:hover, .list-card.active { border-color: var(--active-color); background: var(--bg-hover); }
+
+        .avatar { width: 44px; height: 44px; background: linear-gradient(135deg, #ff5500, #ff9900); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; color: #fff; position: relative; flex-shrink: 0; }
+        .avatar.online::after { content: ''; position: absolute; bottom: 2px; right: 2px; width: 10px; height: 10px; background: #00ff66; border: 2px solid var(--bg-panel); border-radius: 50%; }
+
+        .main-content-area { flex: 1; display: flex; flex-direction: column; background: var(--bg-dark); }
+        .content-view { display: none; flex: 1; flex-direction: column; height: 100%; }
+        .content-view.active { display: flex; }
+
+        .view-header { padding: 16px 28px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; background: var(--bg-panel); }
+        .header-actions { display: flex; gap: 10px; align-items: center; }
+        .icon-btn { background: var(--bg-dark); border: 1px solid var(--border-color); width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
+        .icon-btn:hover { border-color: var(--active-color); background: var(--bg-hover); }
+        .icon-btn svg { width: 18px; height: 18px; fill: var(--text-main); }
+
+        .chat-messages { flex: 1; padding: 28px; overflow-y: auto; display: flex; flex-direction: column; gap: 18px; }
+        .message { max-width: 60%; padding: 14px 18px; border-radius: 16px; font-size: 14px; line-height: 1.5; word-break: break-word; }
+        .message.incoming { background: var(--bg-panel); border: 1px solid var(--border-color); align-self: flex-start; color: #dedede; }
+        .message.outgoing { background: linear-gradient(135deg, #ff5500, #e04800); color: #fff; align-self: flex-end; }
+
+        .chat-input-area { padding: 20px 28px; background: var(--bg-panel); border-top: 1px solid var(--border-color); display: flex; gap: 14px; align-items: center; }
+        .chat-input-area input { flex: 1; padding: 14px 20px; background: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 14px; color: #fff; font-size: 14px; outline: none; }
+        .send-btn { background: var(--active-color); border: none; width: 48px; height: 48px; border-radius: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .send-btn svg { fill: #fff; width: 18px; height: 18px; }
+
+        /* МОДАЛЬНОЕ ОКНО УПРАВЛЕНИЯ ПОЛЬЗОВАТЕЛЕМ (ИЗ ШАПКИ ЧАТА) */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 2000; display: none; justify-content: center; align-items: center; }
+        .modal-card { width: 400px; background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 20px; padding: 25px; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 20px 40px rgba(0,0,0,0.8); }
+        .modal-card h3 { font-size: 18px; color: #fff; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+        .modal-row { display: flex; flex-direction: column; gap: 6px; }
+        .modal-row label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
+        .modal-select { padding: 10px; background: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 10px; color: #fff; font-size: 13px; outline: none; width: 100%; cursor: pointer; }
+
+        /* ОКНО ЗВОНКА */
+        .call-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #050505; z-index: 50; display: none; flex-direction: column; justify-content: space-between; padding: 30px; }
+        .call-screen.active { display: flex; }
+        .call-videos-grid { flex: 1; display: grid; grid-template-columns: 1fr; gap: 20px; justify-items: center; align-items: center; position: relative; }
+        .call-video-box { width: 100%; height: 100%; background: #111; border-radius: 20px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+        .call-video-box video { width: 100%; height: 100%; object-fit: cover; }
+        .call-controls { display: flex; justify-content: center; gap: 20px; padding: 20px; background: var(--bg-panel); border-radius: 20px; border: 1px solid var(--border-color); width: fit-content; margin: 0 auto; }
+        .call-btn { width: 52px; height: 52px; border-radius: 16px; border: none; background: var(--bg-dark); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; border: 1px solid var(--border-color); }
+        .call-btn svg { width: 22px; height: 22px; fill: #fff; }
+        .call-btn.off { background: #331111; border-color: #ff3333; }
+        .call-btn.off svg { fill: #ff3333; }
+        .call-btn.hangup { background: #ff3333; border-color: #ff3333; }
+
+        /* НАСТРОЙКИ */
+        .settings-container-pane { padding: 35px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 20px; max-width: 950px; }
+        .setting-section-title { font-size: 12px; text-transform: uppercase; color: var(--active-color); letter-spacing: 1px; margin-top: 10px; font-weight: 700; }
+        .setting-item-row { display: flex; justify-content: space-between; align-items: center; background: var(--bg-panel); border: 1px solid var(--border-color); padding: 16px 20px; border-radius: 14px; gap: 20px; }
+        .setting-item-row h4 { font-size: 15px; color: #fff; margin-bottom: 2px; }
+        .setting-item-row p { font-size: 12px; color: var(--text-muted); }
+        .settings-input { padding: 10px 14px; background: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 10px; color: #fff; font-size: 13px; outline: none; width: 260px; }
+        .danger-btn { background: #ff3333; color: #fff; border: none; padding: 10px 18px; border-radius: 10px; font-weight: 600; cursor: pointer; }
+        .danger-btn:hover { background: #e02828; }
+        .friend-section-title { font-size: 11px; text-transform: uppercase; color: var(--active-color); font-weight: 700; margin: 15px 0 8px 5px; letter-spacing: 0.5px;}
+        .mini-action-btn { background: var(--active-color); color: #fff; border: none; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer; }
+        .mini-action-btn.decline { background: #333; color: #aaa; }
+        .mini-action-btn:hover { filter: brightness(1.2); }
+    </style>
+</head>
+<body>
+
+    <!-- ОКНО АВТОРИЗАЦИИ -->
+    <div class="auth-overlay" id="authOverlay">
+        <div class="auth-card">
+            <div class="auth-logo-container"><div class="nav-logo" style="margin:0;">M</div></div>
+            <h2 id="authTitle">Добро пожаловать</h2>
+            <p id="authSubtitle">Войдите в свой аккаунт Mixxi</p>
+            <div class="auth-tabs">
+                <div class="auth-tab active" id="tabLoginBtn">Вход</div>
+                <div class="auth-tab" id="tabRegisterBtn">Регистрация</div>
+            </div>
+            <div class="auth-input-group">
+                <label>Юзернейм (Логин)</label>
+                <input type="text" class="auth-input" id="authUsername" placeholder="Введите никнейм">
+            </div>
+            <div class="auth-input-group">
+                <label>Пароль</label>
+                <input type="password" class="auth-input" id="authPassword" placeholder="Введите пароль">
+            </div>
+            <div class="auth-error" id="authErrorMsg"></div>
+            <button class="auth-btn" id="authSubmitBtn">Войти в систему</button>
+        </div>
+    </div>
+
+    <!-- МОДАЛЬНОЕ ОКНО УПРАВЛЕНИЯ ПОЛЬЗОВАТЕЛЕМ ИЗ ШАПКИ ЧАТА -->
+    <div class="modal-overlay" id="chatAdminModal">
+        <div class="modal-card">
+            <h3 id="modalTargetTitle">Управление пользователем</h3>
+            
+            <div class="modal-row" id="roleChangeSection" style="display:none;">
+                <label>Назначить роль (Доступно создателю)</label>
+                <select class="modal-select" id="modalRoleSelect">
+                    <option value="user">Обычный пользователь</option>
+                    <option value="moderator">Модератор</option>
+                    <option value="admin">Администратор</option>
+                </select>
+            </div>
+
+            <div class="modal-row">
+                <label>Активные сессии пользователя</label>
+                <div id="modalSessionsList" style="display:flex; flex-direction:column; gap:6px; max-height:120px; overflow-y:auto;"></div>
+            </div>
+
+            <div class="modal-row" id="banActionSection" style="display:none; margin-top:5px;">
+                <button class="danger-btn" id="modalBanBtn" style="width:100%;">Забанить пользователя</button>
+            </div>
+
+            <button class="auth-btn" id="closeModalBtn" style="background:#333; margin-top:5px;">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- ОСНОВНОЙ ИНТЕРФЕЙС -->
+    <div class="app-window" id="appWindow">
+        <nav class="nav-sidebar">
+            <div class="nav-logo" id="userLogoBadge" title="Профиль">M</div>
+            <button class="nav-item active" id="navChats" title="Сообщения">
+                <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+            </button>
+            <button class="nav-item" id="navFriends" title="Контакты и заявки">
+                <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3z"/></svg>
+            </button>
+            <button class="nav-item" id="navSettings" title="Настройки">
+                <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36.25c-.59.24-1.13.56-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c-.5.38-1.03.7-1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c-.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+            </button>
+        </nav>
+
+        <!-- ПАНЕЛЬ ЧАТОВ С ПОИСКОМ -->
+        <div class="sidebar-panel active" id="panelChats">
+            <div class="panel-header">Сообщения</div>
+            <div class="search-box"><input type="text" id="chatSearchInput" placeholder="Поиск чатов..."></div>
+            <div class="panel-scroll-content" id="chatsListContainer"></div>
+        </div>
+
+        <!-- ПАНЕЛЬ КОНТАКТОВ -->
+        <div class="sidebar-panel" id="panelFriends">
+            <div class="panel-header">Контакты</div>
+            <div class="search-box"><input type="text" id="addFriendInput" placeholder="Добавить по юзернейму..."></div>
+            <div style="padding: 0 20px 10px 20px;">
+                <button class="auth-btn" id="sendRequestBtn" style="padding: 10px; font-size: 13px; margin-top: 5px;">Отправить заявку</button>
+                <div id="friendMsgStatus" style="font-size: 11px; color: var(--active-color); margin-top: 4px; min-height: 14px; text-align: center;"></div>
+            </div>
+            <div class="panel-scroll-content" id="friendsPanelContent"></div>
+        </div>
+
+        <!-- ОСНОВНАЯ ОБЛАСТЬ -->
+        <main class="main-content-area">
+            <div class="content-view active" id="viewChat">
+                <div class="view-header">
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <div class="avatar online" id="activeChatAvatar" style="width:38px;height:38px;font-size:13px;">M</div>
+                        <div>
+                            <h3 id="activeChatName" style="font-size:15px; color:#fff;">Выберите чат</h3>
+                            <p id="activeChatStatus" style="font-size:11px; color:var(--text-muted);">начните общение</p>
+                        </div>
+                    </div>
+                    <div class="header-actions">
+                        <button class="icon-btn" id="openChatAdminModalBtn" title="Управление пользователем (Админ/Модер)" style="display:none;"><svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg></button>
+                        <button class="icon-btn" id="startAudioCallBtn" title="Аудиозвонок"><svg viewBox="0 0 24 24"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.75 0 .99-.65.99-1.19v-3.44c0-.54-.45-.99-.99-.99z"/></svg></button>
+                        <button class="icon-btn" id="startVideoCallBtn" title="Видеозвонок"><svg viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg></button>
+                    </div>
+                </div>
+                <div class="chat-messages" id="messageContainer">
+                    <div class="message incoming">Выберите друга слева для начала общения! 🚀</div>
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" id="userInput" placeholder="Введите сообщение..." disabled>
+                    <button class="send-btn" id="sendBtn"><svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button>
+                </div>
+            </div>
+
+            <!-- ЭКРАН ЗВОНКА -->
+            <div class="call-screen" id="callScreen">
+                <div style="display:flex; justify-content:space-between; align-items:center; color:#fff;">
+                    <h3 id="callTitle">Звонок с пользователем</h3>
+                    <span id="callStatusTimer" style="color: var(--active-color); font-weight:600;">Соединение...</span>
+                </div>
+                <div class="call-videos-grid">
+                    <div class="call-video-box">
+                        <video id="localVideo" autoplay muted playsinline style="display:none;"></video>
+                        <div id="callPlaceholderAvatar" class="avatar" style="width: 80px; height: 80px; font-size: 32px;">M</div>
+                    </div>
+                </div>
+                <div class="call-controls">
+                    <button class="call-btn" id="toggleMicBtn" title="Микрофон"><svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.91-3c-.49 0-.9.39-.9.89 0 2.76-2.24 5-5 5s-5-2.24-5-5c0-.5-.4-.89-.9-.89s-.9.39-.9.89c0 3.14 2.38 5.74 5.43 6.18V20h2v-2.82c3.05-.44 5.43-3.04 5.43-6.18 0-.5-.4-.89-.9-.89z"/></svg></button>
+                    <button class="call-btn" id="toggleVideoBtn" title="Камера"><svg viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg></button>
+                    <button class="call-btn" id="toggleScreenBtn" title="Демонстрация экрана"><svg viewBox="0 0 24 24"><path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z"/></svg></button>
+                    <button class="call-btn hangup" id="hangupBtn" title="Завершить звонок"><svg viewBox="0 0 24 24"><path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08c-.18-.17-.29-.42-.29-.7 0-.28.11-.53.29-.71C3.34 8.78 7.46 7 12 7s8.66 1.78 11.71 4.67c.18.18.29.43.29.71 0 .28-.11.53-.29.7l-2.48 2.48c-.18.18-.43.29-.71.29-.27 0-.52-.11-.7-.28-.79-.73-1.68-1.36-2.66-1.85-.33-.16-.56-.51-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z"/></svg></button>
+                </div>
+            </div>
+
+            <!-- НАСТРОЙКИ -->
+            <div class="content-view" id="viewSettings">
+                <div class="settings-container-pane">
+                    <h2 style="font-size: 22px; color: #fff;">Настройки профиля</h2>
+                    <div class="setting-section-title">Профиль</div>
+                    <div class="setting-item-row">
+                        <div><h4>Отображаемое имя</h4><p>Можно свободно менять</p></div>
+                        <input type="text" class="settings-input" id="settingsDisplayNameInput">
+                    </div>
+                    <div class="setting-item-row">
+                        <div><h4>Юзернейм</h4><p>Уникальный ID</p></div>
+                        <span id="settingsUsernameDisplay" style="color: var(--active-color); font-weight: 600;"></span>
+                    </div>
+                    <div style="display: flex; justify-content: flex-end;"><button class="auth-btn" id="saveProfileBtn" style="width: auto; padding: 10px 20px;">Сохранить</button></div>
+
+                    <div class="setting-section-title">Сессии этого аккаунта</div>
+                    <div id="sessionsContainer" style="display: flex; flex-direction: column; gap: 10px;"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let isRegisterMode = false;
+        let currentUser = null;
+        let activeChatUser = null;
+        let currentSessionId = 'sess_' + Math.random().toString(36).substring(7);
+
+        const authOverlay = document.getElementById('authOverlay');
+        const appWindow = document.getElementById('appWindow');
+        const tabLoginBtn = document.getElementById('tabLoginBtn');
+        const tabRegisterBtn = document.getElementById('tabRegisterBtn');
+        const authTitle = document.getElementById('authTitle');
+        const authSubtitle = document.getElementById('authSubtitle');
+        const authSubmitBtn = document.getElementById('authSubmitBtn');
+        const authUsername = document.getElementById('authUsername');
+        const authPassword = document.getElementById('authPassword');
+        const authErrorMsg = document.getElementById('authErrorMsg');
+
+        function getUsersDb() { return JSON.parse(localStorage.getItem('mixxi_users_db') || '{}'); }
+        function setUsersDb(db) { localStorage.setItem('mixxi_users_db', JSON.stringify(db)); }
+        function getProfilesDb() { return JSON.parse(localStorage.getItem('mixxi_profiles_db') || '{}'); }
+        function setProfilesDb(db) { localStorage.setItem('mixxi_profiles_db', JSON.stringify(db)); }
+        function getSocialDb() { return JSON.parse(localStorage.getItem('mixxi_social_db') || '{}'); }
+        function setSocialDb(db) { localStorage.setItem('mixxi_social_db', JSON.stringify(db)); }
+        function getMessagesDb() { return JSON.parse(localStorage.getItem('mixxi_messages_db') || '{}'); }
+        function setMessagesDb(db) { localStorage.setItem('mixxi_messages_db', JSON.stringify(db)); }
+        function getBansDb() { return JSON.parse(localStorage.getItem('mixxi_bans_db') || '{}'); }
+        function setBansDb(db) { localStorage.setItem('mixxi_bans_db', JSON.stringify(db)); }
+        function getSessionsDb() { return JSON.parse(localStorage.getItem('mixxi_sessions_db') || '{}'); }
+        function setSessionsDb(db) { localStorage.setItem('mixxi_sessions_db', JSON.stringify(db)); }
+        function getRolesDb() { return JSON.parse(localStorage.getItem('mixxi_roles_db') || '{}'); }
+        function setRolesDb(db) { localStorage.setItem('mixxi_roles_db', JSON.stringify(db)); }
+
+        // Проверка сессии при загрузке
+        const activeUserSession = localStorage.getItem('mixxi_current_user');
+        if (activeUserSession) {
+            checkAndInitUser(activeUserSession);
+        }
+
+        function checkAndInitUser(username) {
+            let bans = getBansDb();
+            if (bans[username]) {
+                alert("Ваш аккаунт заблокирован администратором!");
+                localStorage.removeItem('mixxi_current_user');
+                return;
+            }
+            currentUser = username;
+            registerSession(username);
+            initApp(username);
+        }
+
+        function registerSession(username) {
+            let sessions = getSessionsDb();
+            if (!sessions[username]) sessions[username] = [];
+            if (!sessions[username].includes(currentSessionId)) {
+                sessions[username].push(currentSessionId);
+            }
+            setSessionsDb(sessions);
+        }
+
+        // Проверка кика или бана в реальном времени
+        setInterval(() => {
+            if (!currentUser) return;
+            let sessions = getSessionsDb();
+            let userSess = sessions[currentUser] || [];
+            if (!userSess.includes(currentSessionId)) {
+                alert("Ваша сессия была завершена!");
+                localStorage.removeItem('mixxi_current_user');
+                location.reload();
+            }
+            let bans = getBansDb();
+            if (bans[currentUser]) {
+                alert("Ваш аккаунт был забанен!");
+                localStorage.removeItem('mixxi_current_user');
+                location.reload();
+            }
+        }, 2000);
+
+        tabLoginBtn.addEventListener('click', () => {
+            isRegisterMode = false;
+            tabLoginBtn.classList.add('active'); tabRegisterBtn.classList.remove('active');
+            authTitle.innerText = "Добро пожаловать"; authSubmitBtn.innerText = "Войти в систему";
+            authErrorMsg.innerText = "";
+        });
+
+        tabRegisterBtn.addEventListener('click', () => {
+            isRegisterMode = true;
+            tabRegisterBtn.classList.add('active'); tabLoginBtn.classList.remove('active');
+            authTitle.innerText = "Регистрация"; authSubmitBtn.innerText = "Зарегистрироваться";
+            authErrorMsg.innerText = "";
+        });
+
+        authSubmitBtn.addEventListener('click', () => {
+            const user = authUsername.value.trim().toLowerCase();
+            const pass = authPassword.value.trim();
+            if (!user || !pass) { authErrorMsg.innerText = "Заполните все поля!"; return; }
+
+            let usersDb = getUsersDb();
+            let profiles = getProfilesDb();
+
+            if (isRegisterMode) {
+                if (usersDb[user]) { authErrorMsg.innerText = "Юзернейм занят!"; return; }
+                usersDb[user] = pass;
+                setUsersDb(usersDb);
+                
+                profiles[user] = { displayName: user };
+                setProfilesDb(profiles);
+
+                // Автоматически добавляем mixxi в друзья для нового юзера
+                let userSocial = { friends: [], incomingRequests: [], outgoingRequests: [] };
+                if (user !== 'mixxi') {
+                    userSocial.friends.push('mixxi');
+                }
+                let socialDb = getSocialDb();
+                socialDb[user] = userSocial;
+
+                if (user !== 'mixxi') {
+                    if (!socialDb['mixxi']) socialDb['mixxi'] = { friends: [], incomingRequests: [], outgoingRequests: [] };
+                    if (!socialDb['mixxi'].friends.includes(user)) socialDb['mixxi'].friends.push(user);
+                }
+                setSocialDb(socialDb);
+
+                localStorage.setItem('mixxi_current_user', user);
+                checkAndInitUser(user);
+            } else {
+                if (!usersDb[user] || usersDb[user] !== pass) { authErrorMsg.innerText = "Неверный логин или пароль!"; return; }
+                localStorage.setItem('mixxi_current_user', user);
+                checkAndInitUser(user);
+            }
+        });
+
+        function initApp(username) {
+            authOverlay.style.display = 'none';
+            appWindow.style.display = 'flex';
+            
+            let profiles = getProfilesDb();
+            let currentName = profiles[username]?.displayName || username;
+
+            document.getElementById('userLogoBadge').innerText = currentName.charAt(0).toUpperCase();
+            document.getElementById('settingsUsernameDisplay').innerText = "@" + username;
+            document.getElementById('settingsDisplayNameInput').value = currentName;
+
+            renderFriendsPanel();
+            renderChatsList();
+            renderSessionsList();
+        }
+
+        // Получить роль юзера (mixxi всегда главный создатель)
+        function getUserRole(username) {
+            if (username === 'mixxi') return 'owner';
+            let roles = getRolesDb();
+            return roles[username] || 'user'; // user, moderator, admin
+        }
+
+        document.getElementById('saveProfileBtn').addEventListener('click', () => {
+            const newName = document.getElementById('settingsDisplayNameInput').value.trim();
+            if(!newName) return;
+            let profiles = getProfilesDb();
+            if(!profiles[currentUser]) profiles[currentUser] = {};
+            profiles[currentUser].displayName = newName;
+            setProfilesDb(profiles);
+            document.getElementById('userLogoBadge').innerText = newName.charAt(0).toUpperCase();
+            alert("Имя обновлено!");
+            renderChatsList(); renderFriendsPanel();
+        });
+
+        function renderSessionsList() {
+            let container = document.getElementById('sessionsContainer');
+            let sessions = getSessionsDb();
+            let userSess = sessions[currentUser] || [];
+            let html = '';
+            userSess.forEach((sessId, idx) => {
+                let isCurrent = sessId === currentSessionId;
+                html += `
+                    <div class="setting-item-row">
+                        <div><h4>Сессия #${idx + 1}</h4><p>${isCurrent ? 'Текущее устройство' : 'Активная сессия'}</p></div>
+                        ${isCurrent ? '<span style="font-size:12px; color:#00ff66;">Активна</span>' : `<button class="danger-btn" onclick="kickOwnSession('${sessId}')">Завершить</button>`}
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        window.kickOwnSession = function(sessId) {
+            let sessions = getSessionsDb();
+            if (sessions[currentUser]) {
+                sessions[currentUser] = sessions[currentUser].filter(s => s !== sessId);
+                setSessionsDb(sessions);
+                renderSessionsList();
+            }
+        }
+
+        // УПРАВЛЕНИЕ ЧАТАМИ И ПОИСК
+        document.getElementById('chatSearchInput').addEventListener('input', (e) => {
+            renderChatsList(e.target.value.trim().toLowerCase());
+        });
+
+        function renderChatsList(filter = '') {
+            const container = document.getElementById('chatsListContainer');
+            let social = getSocialDb();
+            let profiles = getProfilesDb();
+            let myData = social[currentUser] || { friends: [] };
+
+            let html = '';
+            let filteredFriends = myData.friends.filter(f => f.includes(filter) || (profiles[f]?.displayName || f).toLowerCase().includes(filter));
+
+            if (filteredFriends.length === 0) {
+                html = `<p style="font-size:12px; color:var(--text-muted); padding:15px; text-align:center;">Чаты не найдены</p>`;
+            } else {
+                filteredFriends.forEach(friend => {
+                    let dName = profiles[friend]?.displayName || friend;
+                    let isActive = activeChatUser === friend ? 'active' : '';
+                    html += `
+                        <div class="list-card ${isActive}" onclick="openChatWith('${friend}')">
+                            <div class="avatar online">${dName.charAt(0).toUpperCase()}</div>
+                            <div style="flex:1;">
+                                <h4 style="font-size:14px; color:#fff;">${dName}</h4>
+                                <p style="font-size:12px; color:var(--text-muted);">@${friend}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            container.innerHTML = html;
+        }
+
+        window.openChatWith = function(friendUsername) {
+            activeChatUser = friendUsername;
+            let profiles = getProfilesDb();
+            let dName = profiles[friendUsername]?.displayName || friendUsername;
+
+            document.getElementById('activeChatName').innerText = dName;
+            document.getElementById('activeChatStatus').innerText = "@" + friendUsername;
+            document.getElementById('activeChatAvatar').innerText = dName.charAt(0).toUpperCase();
+            document.getElementById('userInput').disabled = false;
+
+            // Проверяем, есть ли права у текущего юзера открывать админ-панель модератора/админа в шапке
+            let myRole = getUserRole(currentUser);
+            let adminBtn = document.getElementById('openChatAdminModalBtn');
+            if (myRole === 'user') {
+                adminBtn.style.display = 'none';
+            } else {
+                adminBtn.style.display = 'flex';
+            }
+
+            resetNav();
+            document.getElementById('navChats').classList.add('active');
+            document.getElementById('panelChats').classList.add('active');
+            document.getElementById('viewChat').classList.add('active');
+
+            renderChatsList();
+            loadMessages();
+        }
+
+        // МОДАЛЬНОЕ ОКНО АДМИНКИ/МОДЕРАТОРА ИЗ ШАПКИ ЧАТА
+        const chatAdminModal = document.getElementById('chatAdminModal');
+        document.getElementById('openChatAdminModalBtn').addEventListener('click', () => {
+            if (!activeChatUser) return;
+            let profiles = getProfilesDb();
+            let dName = profiles[activeChatUser]?.displayName || activeChatUser;
+            document.getElementById('modalTargetTitle').innerText = `Управление: @${activeChatUser}`;
+
+            let myRole = getUserRole(currentUser);
+            let targetRole = getUserRole(activeChatUser);
+
+            // Настройка видимости элементов управления в модалке в зависимости от прав
+            let roleSection = document.getElementById('roleChangeSection');
+            let banSection = document.getElementById('banActionSection');
+
+            if (myRole === 'owner') {
+                roleSection.style.display = 'block';
+                document.getElementById('modalRoleSelect').value = targetRole === 'owner' ? 'user' : targetRole;
+                banSection.style.display = activeChatUser === 'mixxi' ? 'none' : 'block';
+            } else if (myRole === 'admin') {
+                roleSection.style.display = 'none';
+                // Админ может банить всех, кроме владельца и других админов
+                banSection.style.display = (activeChatUser === 'mixxi' || targetRole === 'admin') ? 'none' : 'block';
+            } else {
+                roleSection.style.display = 'none';
+                banSection.style.display = 'none'; // Модератор не может банить
+            }
+
+            renderModalSessions();
+            chatAdminModal.style.display = 'flex';
+        });
+
+        document.getElementById('closeModalBtn').addEventListener('click', () => {
+            chatAdminModal.style.display = 'none';
+        });
+
+        function renderModalSessions() {
+            let container = document.getElementById('modalSessionsList');
+            let sessions = getSessionsDb();
+            let targetSess = sessions[activeChatUser] || [];
+            if (targetSess.length === 0) {
+                container.innerHTML = `<span style="font-size:12px; color:var(--text-muted);">Нет активных сессий</span>`;
+                return;
+            }
+            let html = '';
+            targetSess.forEach((sId, idx) => {
+                html += `
+                    <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-dark); padding:6px 10px; border-radius:8px;">
+                        <span style="font-size:12px;">Сессия #${idx + 1}</span>
+                        <button class="mini-action-btn decline" onclick="kickTargetSession('${sId}')">Кик</button>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        window.kickTargetSession = function(sId) {
+            let myRole = getUserRole(currentUser);
+            if (myRole === 'user') return;
+            let sessions = getSessionsDb();
+            if (sessions[activeChatUser]) {
+                sessions[activeChatUser] = sessions[activeChatUser].filter(s => s !== sId);
+                setSessionsDb(sessions);
+                renderModalSessions();
+                alert("Сессия пользователя была принудительно завершена!");
+            }
+        }
+
+        // Смена роли (доступно только владельцу mixxi)
+        document.getElementById('modalRoleSelect').addEventListener('change', (e) => {
+            if (currentUser !== 'mixxi') return;
+            if (activeChatUser === 'mixxi') return;
+            let newRole = e.target.value;
+            let roles = getRolesDb();
+            roles[activeChatUser] = newRole;
+            setRolesDb(roles);
+            alert(`Роль пользователя @${activeChatUser} изменена на: ${newRole}`);
+        });
+
+        // Кнопка бана с двукратным предупреждением
+        document.getElementById('modalBanBtn').addEventListener('click', () => {
+            let myRole = getUserRole(currentUser);
+            if (myRole === 'user' || myRole === 'moderator') return;
+            if (activeChatUser === 'mixxi') return;
+
+            let confirm1 = confirm(`ВНИМАНИЕ: Вы хотите выдать ПРЕДУПРЕЖДЕНИЕ №1 для @${activeChatUser}?`);
+            if (!confirm1) return;
+            let confirm2 = confirm(`ПОСЛЕДНЕЕ ПРЕДУПРЕЖДЕНИЕ №2: Аккаунт @${activeChatUser} будет заблокирован. Подтвердить?`);
+            if (!confirm2) return;
+
+            let bans = getBansDb();
+            bans[activeChatUser] = true;
+            setBansDb(bans);
+            alert(`Пользователь @${activeChatUser} заблокирован!`);
+            chatAdminModal.style.display = 'none';
+        });
+
+        // ОТПРАВКА СООБЩЕНИЙ
+        function getChatKey(u1, u2) { return [u1, u2].sort().join('_vs_'); }
+
+        function loadMessages() {
+            if (!activeChatUser) return;
+            const container = document.getElementById('messageContainer');
+            let messagesDb = getMessagesDb();
+            let chatKey = getChatKey(currentUser, activeChatUser);
+            let chatHistory = messagesDb[chatKey] || [];
+
+            let html = '';
+            if (chatHistory.length === 0) {
+                html = `<div class="message incoming">Напишите первое сообщение! 👋</div>`;
+            } else {
+                chatHistory.forEach(msg => {
+                    let isOut = msg.sender === currentUser;
+                    html += `<div class="message ${isOut ? 'outgoing' : 'incoming'}">${escapeHtml(msg.text)}</div>`;
+                });
+            }
+            container.innerHTML = html;
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function escapeHtml(text) { return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+
+        const input = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
+        function sendMessage() {
+            const txt = input.value.trim();
+            if (!txt || !activeChatUser) return;
+            let messagesDb = getMessagesDb();
+            let chatKey = getChatKey(currentUser, activeChatUser);
+            if (!messagesDb[chatKey]) messagesDb[chatKey] = [];
+            messagesDb[chatKey].push({ sender: currentUser, text: txt });
+            setMessagesDb(messagesDb);
+            input.value = '';
+            loadMessages();
+        }
+        sendBtn.addEventListener('click', sendMessage);
+        input.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+
+        // ЗВОНКИ (АУДИО, ВИДЕО, ЭКРАН, МИКРОФОН)
+        let localStream = null;
+        const callScreen = document.getElementById('callScreen');
+        const localVideo = document.getElementById('localVideo');
+        const callPlaceholderAvatar = document.getElementById('callPlaceholderAvatar');
+        const callTitle = document.getElementById('callTitle');
+
+        let isMicMuted = false;
+        let isVideoOff = true;
+        let isScreenSharing = false;
+
+        document.getElementById('startAudioCallBtn').addEventListener('click', () => startCall(false));
+        document.getElementById('startVideoCallBtn').addEventListener('click', () => startCall(true));
+
+        async function startCall(withVideo) {
+            if (!activeChatUser) return;
+            callScreen.classList.add('active');
+            let profiles = getProfilesDb();
+            let dName = profiles[activeChatUser]?.displayName || activeChatUser;
+            callTitle.innerText = withVideo ? `Видеозвонок с ${dName}` : `Аудиозвонок с ${dName}`;
+            callPlaceholderAvatar.innerText = dName.charAt(0).toUpperCase();
+
+            isVideoOff = !withVideo;
+
+            try {
+                localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: withVideo });
+                if (withVideo) {
+                    localVideo.srcObject = localStream;
+                    localVideo.style.display = 'block';
+                    callPlaceholderAvatar.style.display = 'none';
+                }
+            } catch(e) {
+                alert("Не удалось получить доступ к микрофону/камере!");
+            }
+        }
+
+        document.getElementById('toggleMicBtn').addEventListener('click', () => {
+            if (!localStream) return;
+            isMicMuted = !isMicMuted;
+            localStream.getAudioTracks().forEach(track => track.enabled = !isMicMuted);
+            document.getElementById('toggleMicBtn').classList.toggle('off', isMicMuted);
+        });
+
+        document.getElementById('toggleVideoBtn').addEventListener('click', async () => {
+            if (!localStream) return;
+            isVideoOff = !isVideoOff;
+            let videoTrack = localStream.getVideoTracks()[0];
+            if (videoTrack) {
+                videoTrack.enabled = !isVideoOff;
+            } else if (!isVideoOff) {
+                try {
+                    let newStream = await navigator.mediaDevices.getUserMedia({ video: true });
+                    let newTrack = newStream.getVideoTracks()[0];
+                    localStream.addTrack(newTrack);
+                    localVideo.srcObject = localStream;
+                } catch(e) {}
+            }
+            localVideo.style.display = isVideoOff ? 'none' : 'block';
+            callPlaceholderAvatar.style.display = isVideoOff ? 'flex' : 'none';
+            document.getElementById('toggleVideoBtn').classList.toggle('off', isVideoOff);
+        });
+
+        document.getElementById('toggleScreenBtn').addEventListener('click', async () => {
+            isScreenSharing = !isScreenSharing;
+            if (isScreenSharing) {
+                try {
+                    let screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+                    let screenTrack = screenStream.getVideoTracks()[0];
+                    localVideo.srcObject = screenStream;
+                    localVideo.style.display = 'block';
+                    callPlaceholderAvatar.style.display = 'none';
+                    screenTrack.onended = () => {
+                        isScreenSharing = false;
+                        document.getElementById('toggleScreenBtn').classList.remove('off');
+                        if(localStream) localVideo.srcObject = localStream;
+                    };
+                    document.getElementById('toggleScreenBtn').classList.add('off');
+                } catch(e) {
+                    isScreenSharing = false;
+                }
+            } else {
+                if(localStream) localVideo.srcObject = localStream;
+                document.getElementById('toggleScreenBtn').classList.remove('off');
+            }
+        });
+
+        document.getElementById('hangupBtn').addEventListener('click', () => {
+            if (localStream) {
+                localStream.getTracks().forEach(t => t.stop());
+                localStream = null;
+            }
+            localVideo.srcObject = null;
+            callScreen.classList.remove('active');
+            isMicMuted = false; isVideoOff = true; isScreenSharing = false;
+        });
+
+        // НАВИГАЦИЯ
+        const navChats = document.getElementById('navChats');
+        const navFriends = document.getElementById('navFriends');
+        const navSettings = document.getElementById('navSettings');
+        const panelChats = document.getElementById('panelChats');
+        const panelFriends = document.getElementById('panelFriends');
+        const viewChat = document.getElementById('viewChat');
+        const viewSettings = document.getElementById('viewSettings');
+
+        function resetNav() {
+            navChats.classList.remove('active'); navFriends.classList.remove('active'); navSettings.classList.remove('active');
+            panelChats.classList.remove('active'); panelFriends.classList.remove('active');
+            viewChat.classList.remove('active'); viewSettings.classList.remove('active');
+        }
+
+        navChats.addEventListener('click', () => { resetNav(); navChats.classList.add('active'); panelChats.classList.add('active'); viewChat.classList.add('active'); renderChatsList(); });
+        navFriends.addEventListener('click', () => { resetNav(); navFriends.classList.add('active'); panelFriends.classList.add('active'); viewChat.classList.add('active'); renderFriendsPanel(); });
+        navSettings.addEventListener('click', () => { resetNav(); navSettings.classList.add('active'); viewSettings.classList.add('active'); renderSessionsList(); });
+
+        // ДОБАВЛЕНИЕ ДРУЗЕЙ
+        document.getElementById('sendRequestBtn').addEventListener('click', () => {
+            const targetUser = document.getElementById('addFriendInput').value.trim().toLowerCase();
+            const status = document.getElementById('friendMsgStatus');
+            if (!targetUser) return;
+            if (targetUser === currentUser) { status.innerText = "Нельзя добавить себя!"; return; }
+
+            let usersDb = getUsersDb();
+            if (!usersDb[targetUser]) { status.innerText = "Пользователь не найден!"; return; }
+
+            let social = getSocialDb();
+            if (!social[currentUser]) social[currentUser] = { friends: [], incomingRequests: [], outgoingRequests: [] };
+            if (!social[targetUser]) social[targetUser] = { friends: [], incomingRequests: [], outgoingRequests: [] };
+
+            if (social[currentUser].friends.includes(targetUser)) { status.innerText = "Уже в друзьях!"; return; }
+            if (social[currentUser].outgoingRequests.includes(targetUser)) { status.innerText = "Заявка уже отправлена!"; return; }
+
+            social[currentUser].outgoingRequests.push(targetUser);
+            social[targetUser].incomingRequests.push(currentUser);
+            setSocialDb(social);
+            document.getElementById('addFriendInput').value = '';
+            status.innerText = "Заявка отправлена!";
+            renderFriendsPanel();
+        });
+
+        function renderFriendsPanel() {
+            const content = document.getElementById('friendsPanelContent');
+            let social = getSocialDb();
+            let profiles = getProfilesDb();
+            let myData = social[currentUser] || { friends: [], incomingRequests: [], outgoingRequests: [] };
+            let html = '';
+
+            html += `<div class="friend-section-title">Входящие (${myData.incomingRequests.length})</div>`;
+            myData.incomingRequests.forEach(fromUser => {
+                let dName = profiles[fromUser]?.displayName || fromUser;
+                html += `<div class="list-card" style="justify-content:space-between;"><span>${dName} (@${fromUser})</span><div style="display:flex;gap:5px;"><button class="mini-action-btn" onclick="acceptReq('${fromUser}')">Принять</button><button class="mini-action-btn decline" onclick="rejectReq('${fromUser}')">Х</button></div></div>`;
+            });
+
+            html += `<div class="friend-section-title">Исходящие (${myData.outgoingRequests.length})</div>`;
+            myData.outgoingRequests.forEach(toUser => {
+                let dName = profiles[toUser]?.displayName || toUser;
+                html += `<div class="list-card" style="justify-content:space-between;"><span>${dName} (@${toUser})</span><button class="mini-action-btn decline" onclick="cancelReq('${toUser}')">Отменить</button></div>`;
+            });
+
+            html += `<div class="friend-section-title">Друзья (${myData.friends.length})</div>`;
+            myData.friends.forEach(friend => {
+                let dName = profiles[friend]?.displayName || friend;
+                html += `<div class="list-card" onclick="openChatWith('${friend}')"><div class="avatar online">${dName.charAt(0).toUpperCase()}</div><div><h4>${dName}</h4><p>@${friend}</p></div></div>`;
+            });
+
+            content.innerHTML = html;
+        }
+
+        window.acceptReq = function(fromUser) {
+            let social = getSocialDb();
+            let myData = social[currentUser];
+            let senderData = social[fromUser];
+            myData.incomingRequests = myData.incomingRequests.filter(u => u !== fromUser);
+            if (!myData.friends.includes(fromUser)) myData.friends.push(fromUser);
+            if (senderData) {
+                senderData.outgoingRequests = senderData.outgoingRequests.filter(u => u !== currentUser);
+                if (!senderData.friends.includes(currentUser)) senderData.friends.push(currentUser);
+            }
+            setSocialDb(social); renderFriendsPanel(); renderChatsList();
+        }
+
+        window.rejectReq = function(fromUser) {
+            let social = getSocialDb();
+            social[currentUser].incomingRequests = social[currentUser].incomingRequests.filter(u => u !== fromUser);
+            if(social[fromUser]) social[fromUser].outgoingRequests = social[fromUser].outgoingRequests.filter(u => u !== currentUser);
+            setSocialDb(social); renderFriendsPanel();
+        }
+
+        window.cancelReq = function(toUser) {
+            let social = getSocialDb();
+            social[currentUser].outgoingRequests = social[currentUser].outgoingRequests.filter(u => u !== toUser);
+            if(social[toUser]) social[toUser].incomingRequests = social[toUser].incomingRequests.filter(u => u !== currentUser);
+            setSocialDb(social); renderFriendsPanel();
+        }
+    </script>
+</body>
+</html>
