@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mixxi Messenger Pro</title>
+    <title>Mixxi Messenger Pro v36.2</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -19,25 +19,7 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; user-select: none; }
-        body { background-color: var(--bg-darker); color: var(--text-main); height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; background-image: radial-gradient(circle at 50% 20%, #1f0e06 0%, var(--bg-darker) 70%); position: relative; }
-
-        /* ВЕРСИЯ В ПРАВОМ НИЖНЕМ УГЛУ */
-        .app-version-badge {
-            position: fixed;
-            bottom: 12px;
-            right: 16px;
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--text-muted);
-            background: rgba(20, 20, 20, 0.7);
-            border: 1px solid var(--border-color);
-            padding: 4px 10px;
-            border-radius: 8px;
-            backdrop-filter: blur(6px);
-            z-index: 9999;
-            letter-spacing: 0.5px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-        }
+        body { background-color: var(--bg-darker); color: var(--text-main); height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; background-image: radial-gradient(circle at 50% 20%, #1f0e06 0%, var(--bg-darker) 70%); }
 
         .auth-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(5, 5, 5, 0.92); backdrop-filter: blur(12px); z-index: 1000; display: flex; justify-content: center; align-items: center; }
         .auth-card { width: 420px; background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 24px; padding: 40px; box-shadow: 0 30px 60px rgba(0,0,0,0.9), 0 0 40px var(--active-glow); display: flex; flex-direction: column; gap: 20px; }
@@ -178,9 +160,6 @@
 </head>
 <body>
 
-    <!-- ВЕРСИЯ В ПРАВОМ НИЖНЕМ УГЛУ -->
-    <div class="app-version-badge">v36.1</div>
-
     <div class="custom-popup-overlay" id="customPopup">
         <div class="custom-popup-card">
             <h4 id="popupTitle">Внимание</h4>
@@ -195,7 +174,7 @@
         <div class="auth-card">
             <div class="auth-logo-container"><div class="nav-logo" style="margin:0;">M</div></div>
             <h2 id="authTitle">Добро пожаловать</h2>
-            <p id="authSubtitle">Войдите в свой аккаунт Mixxi</p>
+            <p id="authSubtitle">Войдите в свой аккаунт Mixxi (v36.2)</p>
             
             <div class="auth-tabs" id="authTabsContainer">
                 <div class="auth-tab active" id="tabLoginBtn">Вход</div>
@@ -375,7 +354,7 @@
 
             <div class="content-view" id="viewSettings">
                 <div class="settings-container-pane">
-                    <h2 style="font-size: 22px; color: #fff;">Настройки профиля</h2>
+                    <h2 style="font-size: 22px; color: #fff;">Настройки профиля (v36.2)</h2>
                     <div class="setting-section-title">Профиль</div>
                     <div class="setting-item-row">
                         <div><h4>Отображаемое имя</h4><p>Можно свободно менять</p></div>
@@ -393,6 +372,13 @@
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 5px; flex-wrap: wrap; gap: 10px;">
                         <button class="danger-btn" id="logoutAccountBtn" style="background: #331111; color: #ff3333; border: 1px solid #ff3333;">Выйти из аккаунта</button>
                         <button class="auth-btn" id="saveProfileBtn" style="width: auto; padding: 10px 20px; margin:0;">Сохранить изменения</button>
+                    </div>
+
+                    <!-- ДОБАВЛЕНА КНОПКА УДАЛЕНИЯ СВОЕГО АККАУНТА -->
+                    <div class="setting-section-title" style="color:#ff3333;">Опасная зона</div>
+                    <div class="setting-item-row" style="border-color: #551111;">
+                        <div><h4 style="color:#ff3333;">Удалить аккаунт</h4><p>Полное удаление профиля, чатов и всех данных</p></div>
+                        <button class="danger-btn" id="selfDeleteAccountBtn" style="background: #990000;">Удалить аккаунт</button>
                     </div>
 
                     <div class="setting-section-title">Безопасность</div>
@@ -767,6 +753,47 @@
             });
         });
 
+        // ФУНКЦИЯ УДАЛЕНИЯ СВОЕГО АККАУНТА ИЗ НАСТРОЕК
+        document.getElementById('selfDeleteAccountBtn').addEventListener('click', () => {
+            if (currentUser === 'mixxi') {
+                showCustomPopup("Ошибка", "Создателя системы нельзя удалить!");
+                return;
+            }
+            showCustomPopup("ВНИМАНИЕ", "Вы уверены, что хотите полностью удалить свой аккаунт? Это действие необратимо!", () => {
+                let target = currentUser;
+                
+                let usersDb = getUsersDb();
+                delete usersDb[target];
+                setUsersDb(usersDb);
+
+                let profiles = getProfilesDb();
+                delete profiles[target];
+                setProfilesDb(profiles);
+
+                let sessions = getSessionsDb();
+                delete sessions[target];
+                setSessionsDb(sessions);
+
+                let bans = getBansDb();
+                delete bans[target];
+                setBansDb(bans);
+
+                let social = getSocialDb();
+                delete social[target];
+                Object.keys(social).forEach(u => {
+                    if (social[u]) {
+                        social[u].friends = (social[u].friends || []).filter(f => f !== target);
+                        social[u].incomingRequests = (social[u].incomingRequests || []).filter(f => f !== target);
+                        social[u].outgoingRequests = (social[u].outgoingRequests || []).filter(f => f !== target);
+                    }
+                });
+                setSocialDb(social);
+
+                localStorage.removeItem('mixxi_current_user');
+                location.reload();
+            });
+        });
+
         function renderSessionsList() {
             let container = document.getElementById('sessionsContainer');
             let sessions = getSessionsDb();
@@ -776,8 +803,8 @@
                 let isCurrent = sessId === currentSessionId;
                 html += `
                     <div class="setting-item-row">
-                        <div><h4>Сессия #${idx + 1}</h4><p>${isCurrent ? 'Текущее устройство' : 'Активная сессия'}</p></div>
-                        ${isCurrent ? '<span style="font-size:12px; color:#00ff66;">Активна</span>' : `<button class="danger-btn" onclick="kickOwnSession('${sessId}')">Кикнуть</button>`}
+                        <div><h4>Сессия #${idx + 1}</h4><p>${isCurrent ? 'Текущее устройство' : 'Активная сессия на другом устройстве'}</p></div>
+                        ${isCurrent ? '<span style="font-size:12px; color:#00ff66;">Активна</span>' : `<button class="danger-btn" onclick="kickOwnSession('${sessId}')">Завершить</button>`}
                     </div>
                 `;
             });
