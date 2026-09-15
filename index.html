@@ -533,7 +533,10 @@
             authTitle.innerText = "Доступ ограничен";
             let reasonText = banData.reason ? `Причина: ${banData.reason}` : "Причина не указана";
             let timeText = banData.forever ? "Блокировка навсегда" : `До: ${new Date(banData.expiresAt).toLocaleString()}`;
-            authSubtitle.innerHTML = `Ваш аккаунт заблокирован администратором или создателем.<br><br><b>${reasonText}</b><br><span style="color:var(--active-color);">${timeText}</span>`;
+            let adminText = banData.bannedBy ? `Забанил: @${banData.bannedBy}` : "";
+            let bTimeText = banData.bannedAt ? `Время выдачи: ${new Date(banData.bannedAt).toLocaleString()}` : "";
+            
+            authSubtitle.innerHTML = `Ваш аккаунт заблокирован.<br><br><b>${reasonText}</b><br><span style="color:#ff3333;">${adminText}</span><br><span style="color:var(--text-muted); font-size:11px;">${bTimeText}</span><br><span style="color:var(--active-color);">${timeText}</span>`;
             
             authErrorMsg.innerText = "⛔ Вы забанены!";
             authSubmitBtn.innerText = "Понятно";
@@ -660,7 +663,6 @@
             document.getElementById('settingsUsernameDisplay').innerText = "@" + username;
             document.getElementById('settingsDisplayNameInput').value = currentName;
 
-            // Показываем кнопку бота слева ТОЛЬКО если это @mixxi
             const mixxiBotNav = document.getElementById('navMixxiBot');
             if (username === 'mixxi') {
                 mixxiBotNav.style.display = 'flex';
@@ -829,7 +831,6 @@
             let adminBtn = document.getElementById('openChatAdminModalBtn');
             adminBtn.style.display = (myRole === 'user') ? 'none' : 'flex';
 
-            // Мобильная адаптация переключения на чат
             if (window.innerWidth <= 768) {
                 document.getElementById('panelChats').classList.add('mobile-hidden');
                 document.getElementById('panelFriends').classList.add('mobile-hidden');
@@ -944,14 +945,20 @@
                 let banData = bans[username];
                 let timeStr = banData.forever ? "Навсегда" : `До: ${new Date(banData.expiresAt).toLocaleString()}`;
                 let reason = banData.reason || "Причина не указана";
+                let adminName = banData.bannedBy ? `@${banData.bannedBy}` : "Система";
+                let bannedAtStr = banData.bannedAt ? new Date(banData.bannedAt).toLocaleString() : "Неизвестно";
                 
                 html += `
-                    <div style="background:var(--bg-dark); border:1px solid var(--border-color); padding:12px 16px; border-radius:12px; display:flex; flex-direction:column; gap:4px;">
+                    <div style="background:var(--bg-dark); border:1px solid var(--border-color); padding:12px 16px; border-radius:12px; display:flex; flex-direction:column; gap:6px;">
                         <div style="display:flex; justify-content:space-between; align-items:center;">
                             <span style="font-size:14px; font-weight:700; color:#ff3333;">@${username}</span>
                             <span style="font-size:11px; color:var(--active-color); font-weight:600;">${timeStr}</span>
                         </div>
                         <p style="font-size:13px; color:#fff;"><b>Причина:</b> ${reason}</p>
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; color:var(--text-muted);">
+                            <span><b>Забанил:</b> <span style="color:#fff;">${adminName}</span></span>
+                            <span><b>Время бана:</b> <span style="color:#fff;">${bannedAtStr}</span></span>
+                        </div>
                         <div style="display:flex; justify-content:flex-end; margin-top:5px;">
                             <button class="success-btn" style="padding:6px 12px; font-size:11px;" onclick="unbanFromBot('${username}')">Разбанить</button>
                         </div>
@@ -1100,7 +1107,9 @@
                 bans[activeChatUser] = {
                     reason: reason,
                     forever: forever,
-                    expiresAt: expiresAt
+                    expiresAt: expiresAt,
+                    bannedBy: currentUser,     // <--- Юзернейм того, кто забанил
+                    bannedAt: Date.now()       // <--- Точное время выдачи бана
                 };
                 setBansDb(bans);
                 
@@ -1512,7 +1521,7 @@
             let myData = social[currentUser];
             let senderData = social[fromUser];
             myData.incomingRequests = myData.incomingRequests.filter(u => u !== fromUser);
-            if (!myData.friends.includes(fromUser)) myData.friends.push(fromUser);
+            if (!myData.friends.includes(fromUser)) myData.friends.path ? myData.friends.push(fromUser) : myData.friends.push(fromUser);
             if (senderData) {
                 senderData.outgoingRequests = senderData.outgoingRequests.filter(u => u !== currentUser);
                 if (!senderData.friends.includes(currentUser)) senderData.friends.push(currentUser);
