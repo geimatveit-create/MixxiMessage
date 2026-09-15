@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mixxi Messenger Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -21,8 +21,8 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; user-select: none; }
         body { background-color: var(--bg-darker); color: var(--text-main); height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; background-image: radial-gradient(circle at 50% 20%, #1f0e06 0%, var(--bg-darker) 70%); }
 
-        .auth-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(5, 5, 5, 0.92); backdrop-filter: blur(12px); z-index: 1000; display: flex; justify-content: center; align-items: center; padding: 20px; }
-        .auth-card { width: 100%; max-width: 420px; background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 24px; padding: 30px; box-shadow: 0 30px 60px rgba(0,0,0,0.9), 0 0 40px var(--active-glow); display: flex; flex-direction: column; gap: 20px; }
+        .auth-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(5, 5, 5, 0.92); backdrop-filter: blur(12px); z-index: 1000; display: flex; justify-content: center; align-items: center; }
+        .auth-card { width: 420px; background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 24px; padding: 40px; box-shadow: 0 30px 60px rgba(0,0,0,0.9), 0 0 40px var(--active-glow); display: flex; flex-direction: column; gap: 20px; }
         .auth-logo-container { display: flex; justify-content: center; margin-bottom: 5px; }
         .auth-card h2 { font-size: 24px; color: #fff; text-align: center; font-weight: 700; }
         .auth-card p { font-size: 13px; color: var(--text-muted); text-align: center; margin-top: -10px; line-height: 1.4; }
@@ -42,7 +42,7 @@
 
         .app-window { width: 95vw; max-width: 1400px; height: 90vh; background: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 24px; display: none; overflow: hidden; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.95), 0 0 40px var(--active-glow); position: relative; }
 
-        .nav-sidebar { width: 80px; background: var(--bg-darker); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; padding: 20px 0; gap: 15px; }
+        .nav-sidebar { width: 80px; background: var(--bg-darker); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; padding: 20px 0; gap: 15px; z-index: 10; }
         .nav-logo { width: 48px; height: 48px; background: linear-gradient(135deg, #ff5500, #ff9900); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; font-size: 20px; box-shadow: 0 0 15px var(--active-glow); margin-bottom: 10px; overflow: hidden; }
         .nav-logo img { width: 100%; height: 100%; object-fit: cover; }
         .nav-item { width: 48px; height: 48px; border-radius: 14px; background: transparent; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; position: relative; }
@@ -54,7 +54,7 @@
         .sidebar-panel { width: 340px; background: var(--bg-panel); border-right: 1px solid var(--border-color); display: none; flex-direction: column; }
         .sidebar-panel.active { display: flex; }
 
-        .panel-header { padding: 22px 20px; font-weight: 700; font-size: 18px; border-bottom: 1px solid var(--border-color); color: #fff; }
+        .panel-header { padding: 22px 20px; font-weight: 700; font-size: 18px; border-bottom: 1px solid var(--border-color); color: #fff; display: flex; justify-content: space-between; align-items: center; }
         .search-box { padding: 15px 20px 5px 20px; }
         .search-box input { width: 100%; padding: 11px 16px; background: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 12px; color: #fff; font-size: 13px; outline: none; }
 
@@ -67,7 +67,7 @@
         .avatar.online::after { content: ''; position: absolute; bottom: 2px; right: 2px; width: 11px; height: 11px; background: #00ff66; border: 2px solid var(--bg-panel); border-radius: 50%; z-index: 2; }
         .avatar.offline::after { content: ''; position: absolute; bottom: 2px; right: 2px; width: 11px; height: 11px; background: #555; border: 2px solid var(--bg-panel); border-radius: 50%; z-index: 2; }
 
-        .main-content-area { flex: 1; display: flex; flex-direction: column; background: var(--bg-dark); position: relative; }
+        .main-content-area { flex: 1; display: flex; flex-direction: column; background: var(--bg-dark); position: relative; overflow: hidden; }
         .content-view { display: none; flex: 1; flex-direction: column; height: 100%; }
         .content-view.active { display: flex; }
 
@@ -76,8 +76,9 @@
         .icon-btn { background: var(--bg-dark); border: 1px solid var(--border-color); width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
         .icon-btn:hover { border-color: var(--active-color); background: var(--bg-hover); }
         .icon-btn svg { width: 18px; height: 18px; fill: var(--text-main); }
-
-        .back-to-chats-btn { display: none; background: var(--bg-dark); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 10px; color: #fff; font-size: 12px; cursor: pointer; align-items: center; gap: 6px; }
+        
+        .mobile-back-btn { display: none; background: var(--bg-dark); border: 1px solid var(--border-color); width: 38px; height: 38px; border-radius: 10px; align-items: center; justify-content: center; cursor: pointer; }
+        .mobile-back-btn svg { width: 18px; height: 18px; fill: var(--text-main); }
 
         .dropdown-menu { position: absolute; top: 65px; right: 20px; width: 220px; background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 14px; box-shadow: 0 15px 35px rgba(0,0,0,0.8); z-index: 100; display: none; flex-direction: column; overflow: hidden; padding: 6px; }
         .dropdown-item { padding: 10px 14px; font-size: 13px; color: #fff; cursor: pointer; border-radius: 8px; transition: 0.2s; display: flex; align-items: center; gap: 8px; }
@@ -85,24 +86,24 @@
         .dropdown-item.danger:hover { background: #331111; color: #ff3333; }
 
         .chat-messages { flex: 1; padding: 28px; overflow-y: auto; display: flex; flex-direction: column; gap: 18px; }
-        .message { max-width: 75%; padding: 14px 18px; border-radius: 16px; font-size: 14px; line-height: 1.5; word-break: break-word; }
+        .message { max-width: 60%; padding: 14px 18px; border-radius: 16px; font-size: 14px; line-height: 1.5; word-break: break-word; }
         .message.incoming { background: var(--bg-panel); border: 1px solid var(--border-color); align-self: flex-start; color: #dedede; }
         .message.outgoing { background: linear-gradient(135deg, #ff5500, #e04800); color: #fff; align-self: flex-end; }
 
         .chat-input-area { padding: 20px 28px; background: var(--bg-panel); border-top: 1px solid var(--border-color); display: flex; gap: 14px; align-items: center; }
         .chat-input-area input { flex: 1; padding: 14px 20px; background: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 14px; color: #fff; font-size: 14px; outline: none; }
-        .send-btn { background: var(--active-color); border: none; width: 48px; height: 48px; border-radius: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .send-btn { background: var(--active-color); border: none; width: 48px; height: 48px; border-radius: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .send-btn svg { fill: #fff; width: 18px; height: 18px; }
 
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 2000; display: none; justify-content: center; align-items: center; padding: 20px; }
-        .modal-card { width: 100%; max-width: 460px; background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 20px; padding: 25px; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 20px 40px rgba(0,0,0,0.8); max-height: 90vh; overflow-y: auto; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 2000; display: none; justify-content: center; align-items: center; }
+        .modal-card { width: 460px; background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 20px; padding: 25px; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 20px 40px rgba(0,0,0,0.8); max-height: 90vh; overflow-y: auto; }
         .modal-card h3 { font-size: 18px; color: #fff; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
         .modal-row { display: flex; flex-direction: column; gap: 6px; }
         .modal-row label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
         .modal-select, .modal-input { padding: 10px 14px; background: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 10px; color: #fff; font-size: 13px; outline: none; width: 100%; }
 
-        .custom-popup-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); backdrop-filter: blur(6px); z-index: 3000; display: none; justify-content: center; align-items: center; padding: 20px; }
-        .custom-popup-card { width: 100%; max-width: 380px; background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 20px; padding: 25px; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 25px 50px rgba(0,0,0,0.9), 0 0 20px var(--active-glow); text-align: center; }
+        .custom-popup-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); backdrop-filter: blur(6px); z-index: 3000; display: none; justify-content: center; align-items: center; }
+        .custom-popup-card { width: 380px; background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 20px; padding: 25px; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 25px 50px rgba(0,0,0,0.9), 0 0 20px var(--active-glow); text-align: center; }
         .custom-popup-card h4 { font-size: 18px; color: #fff; }
         .custom-popup-card p { font-size: 13px; color: var(--text-muted); line-height: 1.4; }
         .custom-popup-btns { display: flex; gap: 10px; margin-top: 5px; }
@@ -112,7 +113,7 @@
         .call-videos-grid { flex: 1; display: grid; grid-template-columns: 1fr; gap: 20px; justify-items: center; align-items: center; position: relative; }
         .call-video-box { width: 100%; height: 100%; background: #111; border-radius: 20px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
         .call-video-box video { width: 100%; height: 100%; object-fit: cover; }
-        .call-controls { display: flex; justify-content: center; gap: 15px; padding: 15px; background: var(--bg-panel); border-radius: 20px; border: 1px solid var(--border-color); width: fit-content; margin: 0 auto; flex-wrap: wrap; }
+        .call-controls { display: flex; justify-content: center; gap: 20px; padding: 20px; background: var(--bg-panel); border-radius: 20px; border: 1px solid var(--border-color); width: fit-content; margin: 0 auto; }
         .call-btn { width: 52px; height: 52px; border-radius: 16px; border: none; background: var(--bg-dark); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; border: 1px solid var(--border-color); }
         .call-btn svg { width: 22px; height: 22px; fill: #fff; }
         .call-btn.off { background: #331111; border-color: #ff3333; }
@@ -134,24 +135,27 @@
         .mini-action-btn.decline { background: #333; color: #aaa; }
         .mini-action-btn:hover { filter: brightness(1.2); }
 
-        /* СТИЛИ МОБИЛЬНОЙ АДАПТАЦИИ (ОБНАРУЖЕНИЕ ТЕЛЕФОНА) */
-        body.is-mobile .app-window { width: 100vw; height: 100vh; border-radius: 0; border: none; }
-        body.is-mobile .nav-sidebar { width: 100%; height: 65px; flex-direction: row; justify-content: space-around; padding: 0 10px; border-right: none; border-top: 1px solid var(--border-color); order: 2; }
-        body.is-mobile .app-window { flex-direction: column; }
-        body.is-mobile .nav-logo { display: none; }
-        body.is-mobile .nav-item.active::before { display: none; }
-        body.is-mobile .nav-item { width: 40px; height: 40px; }
-        body.is-mobile .sidebar-panel { width: 100%; height: calc(100vh - 65px); position: absolute; top: 0; left: 0; z-index: 10; display: none; }
-        body.is-mobile .sidebar-panel.active { display: flex; }
-        body.is-mobile .main-content-area { width: 100%; height: calc(100vh - 65px); position: absolute; top: 0; left: 0; z-index: 5; display: none; }
-        body.is-mobile .content-view.active { display: flex; }
-        /* Мобильное поведение при открытом чате: скрываем панель чатов, показываем кнопку назад */
-        body.is-mobile.chat-opened .sidebar-panel { display: none !important; }
-        body.is-mobile.chat-opened .main-content-area { display: flex !important; z-index: 20; }
-        body.is-mobile .back-to-chats-btn { display: flex; }
-        body.is-mobile .settings-container-pane { padding: 20px; }
-        body.is-mobile .setting-item-row { flex-direction: column; align-items: flex-start; gap: 8px; }
-        body.is-mobile .settings-input { width: 100%; }
+        /* МОБИЛЬНЫЙ ИНТЕРФЕЙС (ТЕЛЕФОН) */
+        @media (max-width: 768px) {
+            body { height: 100vh; overflow: hidden; align-items: flex-end; background-image: none; background-color: var(--bg-dark); }
+            .app-window { width: 100vw; height: 100vh; max-width: 100%; border: none; border-radius: 0; display: flex; flex-direction: column-reverse; box-shadow: none; }
+            .nav-sidebar { width: 100vw; height: 65px; flex-direction: row; justify-content: space-around; padding: 0; border-right: none; border-top: 1px solid var(--border-color); background: var(--bg-darker); position: absolute; bottom: 0; left: 0; z-index: 100; }
+            .nav-logo { display: none; }
+            .nav-item { width: 44px; height: 44px; }
+            .nav-item.active::before { display: none; }
+            .sidebar-panel { width: 100vw; height: calc(100vh - 65px); position: absolute; top: 0; left: 0; border-right: none; }
+            .main-content-area { width: 100vw; height: calc(100vh - 65px); position: absolute; top: 0; left: 0; z-index: 50; display: none; }
+            .main-content-area.mobile-chat-active { display: flex; }
+            .sidebar-panel.mobile-hidden { display: none !important; }
+            .mobile-back-btn { display: flex; }
+            .chat-messages { padding: 15px; }
+            .chat-input-area { padding: 12px 15px; }
+            .message { max-width: 85%; }
+            .auth-card { width: 90vw; padding: 25px; border-radius: 20px; }
+            .settings-container-pane { padding: 20px; }
+            .setting-item-row { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .settings-input { width: 100%; }
+        }
     </style>
 </head>
 <body>
@@ -190,6 +194,20 @@
         </div>
     </div>
 
+    <!-- ПАНЕЛЬ БОТА ДЛЯ @mixxi (ИНФОРМАЦИЯ О БАНАХ) -->
+    <div class="modal-overlay" id="mixxiBotModal">
+        <div class="modal-card" style="width: 650px; max-width: 95vw;">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-color); padding-bottom:10px;">
+                <h3 style="border:none; padding:0;">🛡️ Бот-мониторинг банов (@mixxi)</h3>
+                <button class="mini-action-btn decline" id="closeMixxiBotModal" style="padding:6px 10px;">✕</button>
+            </div>
+            <p style="font-size:12px; color:var(--text-muted);">Здесь отображается вся информация о забаненных пользователях системы:</p>
+            <div id="mixxiBansListContainer" style="display:flex; flex-direction:column; gap:10px; max-height: 60vh; overflow-y:auto; margin-top:5px;"></div>
+            <button class="auth-btn" id="closeMixxiBotBtn" style="background:#333; margin-top:5px;">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- МОДАЛЬНОЕ ОКНО УПРАВЛЕНИЯ ПОЛЬЗОВАТЕЛЕМ -->
     <div class="modal-overlay" id="chatAdminModal">
         <div class="modal-card">
             <h3 id="modalTargetTitle">Управление пользователем</h3>
@@ -237,7 +255,7 @@
 
             <div class="modal-row admin-exclusive-section" id="deleteAccountSection" style="display:none; border-top:1px solid var(--border-color); padding-top:12px;">
                 <label style="color:#ff3333; font-weight:700;">4. Удалить аккаунт навсегда</label>
-                <p style="font-size:11px; color:var(--text-muted); margin-bottom:6px;">Полное стирание учетной записи и всех данных без возможности восстановления.</p>
+                <p style="font-size:11px; color:var(--text-muted); margin-bottom:6px;">Полное стирание учетной записи и всех данных.</p>
                 <button class="danger-btn" id="modalDeleteAccountBtn" style="width:100%; background:#990000;">Удалить аккаунт навсегда</button>
             </div>
 
@@ -253,6 +271,10 @@
             </button>
             <button class="nav-item" id="navFriends" title="Контакты">
                 <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3z"/></svg>
+            </button>
+            <!-- Кнопка бота видна ТОЛЬКО для @mixxi -->
+            <button class="nav-item" id="navMixxiBot" title="Бот банов (@mixxi)" style="display:none; background: rgba(255,85,0,0.15);">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
             </button>
             <button class="nav-item" id="navSettings" title="Настройки">
                 <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36.25c-.59.24-1.13.56-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c-.5.38-1.03.7-1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c-.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
@@ -275,11 +297,13 @@
             <div class="panel-scroll-content" id="friendsPanelContent"></div>
         </div>
 
-        <main class="main-content-area">
+        <main class="main-content-area" id="mainContentArea">
             <div class="content-view active" id="viewChat">
                 <div class="view-header">
                     <div style="display:flex; align-items:center; gap:12px;">
-                        <button class="back-to-chats-btn" id="backToChatsBtn">← Назад</button>
+                        <button class="mobile-back-btn" id="mobileBackBtn">
+                            <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                        </button>
                         <div class="avatar online" id="activeChatAvatar" style="width:38px;height:38px;font-size:13px;">M</div>
                         <div>
                             <h3 id="activeChatName" style="font-size:15px; color:#fff;">Выберите чат</h3>
@@ -371,18 +395,6 @@
     </div>
 
     <script>
-        // АВТОМАТИЧЕСКОЕ ОБНАРУЖЕНИЕ ТЕЛЕФОНА ИЛИ ПК
-        function detectDeviceAndApply() {
-            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
-            if (isMobile) {
-                document.body.classList.add('is-mobile');
-            } else {
-                document.body.classList.remove('is-mobile');
-            }
-        }
-        window.addEventListener('resize', detectDeviceAndApply);
-        detectDeviceAndApply();
-
         let isRegisterMode = false;
         let currentUser = null;
         let activeChatUser = null;
@@ -614,7 +626,7 @@
                     messagesDb[chatKey] = [
                         {
                             sender: 'mixxi',
-                            text: 'Я создатель! Пишите сюда по поводу ошибок, ложных банов и т. д.\n\n⚠️ Информация по банам:\n• Если аккаунт заблокирован системой автоматической защиты или модератором, обязательно напишите сюда.\n• Если бан выдан по ошибке — я всё перепроверю и решу проблему.'
+                            text: 'Я создатель! Пишите сюда по поводу ошибок, ложных банов и т. д.\n\n⚠️ Информация по банам:\n• Если аккаунт заблокирован, напишите сюда.\n• Если бан выдан по ошибке — я решу проблему.'
                         }
                     ];
                     setMessagesDb(messagesDb);
@@ -647,6 +659,14 @@
 
             document.getElementById('settingsUsernameDisplay').innerText = "@" + username;
             document.getElementById('settingsDisplayNameInput').value = currentName;
+
+            // Показываем кнопку бота слева ТОЛЬКО если это @mixxi
+            const mixxiBotNav = document.getElementById('navMixxiBot');
+            if (username === 'mixxi') {
+                mixxiBotNav.style.display = 'flex';
+            } else {
+                mixxiBotNav.style.display = 'none';
+            }
 
             renderFriendsPanel();
             renderChatsList();
@@ -809,22 +829,25 @@
             let adminBtn = document.getElementById('openChatAdminModalBtn');
             adminBtn.style.display = (myRole === 'user') ? 'none' : 'flex';
 
-            resetNav();
-            document.getElementById('navChats').classList.add('active');
-            document.getElementById('panelChats').classList.add('active');
-            document.getElementById('viewChat').classList.add('active');
-
-            // Мобильная адаптация переключения на экран чата
-            if (document.body.classList.contains('is-mobile')) {
-                document.body.classList.add('chat-opened');
+            // Мобильная адаптация переключения на чат
+            if (window.innerWidth <= 768) {
+                document.getElementById('panelChats').classList.add('mobile-hidden');
+                document.getElementById('panelFriends').classList.add('mobile-hidden');
+                document.getElementById('mainContentArea').classList.add('mobile-chat-active');
+            } else {
+                resetNav();
+                document.getElementById('navChats').classList.add('active');
+                document.getElementById('panelChats').classList.add('active');
+                document.getElementById('viewChat').classList.add('active');
             }
 
             renderChatsList();
             loadMessages();
         }
 
-        document.getElementById('backToChatsBtn').addEventListener('click', () => {
-            document.body.classList.remove('chat-opened');
+        document.getElementById('mobileBackBtn').addEventListener('click', () => {
+            document.getElementById('mainContentArea').classList.remove('mobile-chat-active');
+            document.getElementById('panelChats').classList.remove('mobile-hidden');
         });
 
         const chatOptionsMenuBtn = document.getElementById('chatOptionsMenuBtn');
@@ -852,7 +875,7 @@
 
         document.getElementById('menuDeleteChat').addEventListener('click', () => {
             if (!activeChatUser) return;
-            showCustomPopup("Удалить чат", `Удалить чат с пользователем @${activeChatUser}? Он пропадет из списка ваших чатов.`, () => {
+            showCustomPopup("Удалить чат", `Удалить чат с пользователем @${activeChatUser}?`, () => {
                 let social = getSocialDb();
                 if (social[currentUser]) {
                     social[currentUser].friends = social[currentUser].friends.filter(f => f !== activeChatUser);
@@ -869,8 +892,6 @@
                 document.getElementById('userInput').disabled = true;
                 document.getElementById('messageContainer').innerHTML = `<div class="message incoming">Выберите друга слева для начала общения! 🚀</div>`;
                 document.getElementById('openChatAdminModalBtn').style.display = 'none';
-                document.body.classList.remove('chat-opened');
-                
                 renderChatsList();
             });
         });
@@ -878,7 +899,7 @@
         document.getElementById('menuBlockUser').addEventListener('click', () => {
             if (!activeChatUser) return;
             let target = activeChatUser;
-            showCustomPopup("Блокировка", `Заблокировать пользователя @${target}? Вы удалите его из друзей и прервете связь.`, () => {
+            showCustomPopup("Блокировка", `Заблокировать пользователя @${target}?`, () => {
                 let social = getSocialDb();
                 if (social[currentUser]) social[currentUser].friends = social[currentUser].friends.filter(f => f !== target);
                 if (social[target]) social[target].friends = social[target].friends.filter(f => f !== currentUser);
@@ -894,11 +915,61 @@
                 document.getElementById('userInput').disabled = true;
                 document.getElementById('messageContainer').innerHTML = `<div class="message incoming">Пользователь заблокирован.</div>`;
                 document.getElementById('openChatAdminModalBtn').style.display = 'none';
-                document.body.classList.remove('chat-opened');
                 renderChatsList();
             });
         });
 
+        // --- БОТ-ПАНЕЛЬ ДЛЯ @mixxi (ИНФОРМАЦИЯ О БАНАХ) ---
+        const mixxiBotModal = document.getElementById('mixxiBotModal');
+        document.getElementById('navMixxiBot').addEventListener('click', () => {
+            if (currentUser !== 'mixxi') return;
+            renderMixxiBotBans();
+            mixxiBotModal.style.display = 'flex';
+        });
+        document.getElementById('closeMixxiBotModal').addEventListener('click', () => mixxiBotModal.style.display = 'none');
+        document.getElementById('closeMixxiBotBtn').addEventListener('click', () => mixxiBotModal.style.display = 'none');
+
+        function renderMixxiBotBans() {
+            let container = document.getElementById('mixxiBansListContainer');
+            let bans = getBansDb();
+            let bannedUsers = Object.keys(bans);
+
+            if (bannedUsers.length === 0) {
+                container.innerHTML = `<p style="font-size:13px; color:var(--text-muted); text-align:center; padding:20px;">Нет забаненных пользователей</p>`;
+                return;
+            }
+
+            let html = '';
+            bannedUsers.forEach(username => {
+                let banData = bans[username];
+                let timeStr = banData.forever ? "Навсегда" : `До: ${new Date(banData.expiresAt).toLocaleString()}`;
+                let reason = banData.reason || "Причина не указана";
+                
+                html += `
+                    <div style="background:var(--bg-dark); border:1px solid var(--border-color); padding:12px 16px; border-radius:12px; display:flex; flex-direction:column; gap:4px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-size:14px; font-weight:700; color:#ff3333;">@${username}</span>
+                            <span style="font-size:11px; color:var(--active-color); font-weight:600;">${timeStr}</span>
+                        </div>
+                        <p style="font-size:13px; color:#fff;"><b>Причина:</b> ${reason}</p>
+                        <div style="display:flex; justify-content:flex-end; margin-top:5px;">
+                            <button class="success-btn" style="padding:6px 12px; font-size:11px;" onclick="unbanFromBot('${username}')">Разбанить</button>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        window.unbanFromBot = function(username) {
+            let bans = getBansDb();
+            delete bans[username];
+            setBansDb(bans);
+            renderMixxiBotBans();
+            showCustomPopup("Успешно", `Пользователь @${username} разбанен!`);
+        }
+
+        // --- МОДАЛЬНОЕ ОКНО УПРАВЛЕНИЯ ПОЛЬЗОВАТЕЛЕМ ---
         const chatAdminModal = document.getElementById('chatAdminModal');
         const banForeverCheckbox = document.getElementById('banForeverCheckbox');
         const banDurationContainer = document.getElementById('banDurationContainer');
@@ -965,7 +1036,7 @@
                 html += `
                     <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-dark); padding:6px 10px; border-radius:8px;">
                         <span style="font-size:12px;">Сессия #${idx + 1}</span>
-                        <button class="mini-action-btn decline" onclick="confirmKickSession('${sId}')">Кикнуть сессию</button>
+                        <button class="mini-action-btn decline" onclick="confirmKickSession('${sId}')">Кикнуть</button>
                     </div>
                 `;
             });
@@ -973,7 +1044,7 @@
         }
 
         window.confirmKickSession = function(sId) {
-            showCustomPopup("Подтверждение", "Вы точно хотите это сделать?", () => {
+            showCustomPopup("Подтверждение", "Вы точно хотите кикнуть эту сессию?", () => {
                 let sessions = getSessionsDb();
                 if (sessions[activeChatUser]) {
                     sessions[activeChatUser] = sessions[activeChatUser].filter(s => s !== sId);
@@ -989,7 +1060,7 @@
             if (activeChatUser === 'mixxi') return;
             let newRole = document.getElementById('modalRoleSelect').value;
             
-            showCustomPopup("Подтверждение", "Вы точно хотите это сделать?", () => {
+            showCustomPopup("Подтверждение", "Изменить роль пользователя?", () => {
                 let roles = getRolesDb();
                 roles[activeChatUser] = newRole;
                 setRolesDb(roles);
@@ -1024,9 +1095,13 @@
                 expiresAt = Date.now() + totalMs;
             }
 
-            showCustomPopup("Подтверждение", "Вы точно хотите это сделать?", () => {
+            showCustomPopup("Подтверждение", "Забанить пользователя?", () => {
                 let bans = getBansDb();
-                bans[activeChatUser] = { reason: reason, forever: forever, expiresAt: expiresAt };
+                bans[activeChatUser] = {
+                    reason: reason,
+                    forever: forever,
+                    expiresAt: expiresAt
+                };
                 setBansDb(bans);
                 
                 let sessions = getSessionsDb();
@@ -1042,7 +1117,7 @@
             let myRole = getUserRole(currentUser);
             if (myRole === 'user' || myRole === 'moderator') return;
 
-            showCustomPopup("Подтверждение", "Вы точно хотите это сделать?", () => {
+            showCustomPopup("Подтверждение", "Разбанить пользователя?", () => {
                 let bans = getBansDb();
                 delete bans[activeChatUser];
                 setBansDb(bans);
@@ -1059,7 +1134,7 @@
                 return;
             }
 
-            showCustomPopup("ВНИМАНИЕ", "Вы точно хотите это сделать? Аккаунт будет полностью стерт навсегда!", () => {
+            showCustomPopup("ВНИМАНИЕ", "Удалить аккаунт навсегда со всеми данными?", () => {
                 let target = activeChatUser;
                 
                 let usersDb = getUsersDb();
@@ -1096,7 +1171,6 @@
                 document.getElementById('userInput').disabled = true;
                 document.getElementById('messageContainer').innerHTML = `<div class="message incoming">Аккаунт пользователя был полностью удален.</div>`;
                 document.getElementById('openChatAdminModalBtn').style.display = 'none';
-                document.body.classList.remove('chat-opened');
                 renderChatsList();
 
                 showCustomPopup("Успешно", "Аккаунт пользователя полностью стерт из системы.");
@@ -1143,6 +1217,7 @@
         sendBtn.addEventListener('click', sendMessage);
         input.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
 
+        // --- СИСТЕМА ЗВОНКОВ ---
         let localStream = null;
         const callScreen = document.getElementById('callScreen');
         const localVideo = document.getElementById('localVideo');
@@ -1212,7 +1287,7 @@
                 let callerName = profiles[call.caller]?.displayName || call.caller;
 
                 playDiscordRingTone();
-                showCustomPopup("Входящий звонок", `Вам звонит @${callerName} (${call.withVideo ? 'Видеозвонок' : 'Аудиозвонок'})`, () => {
+                showCustomPopup("Входящий звонок", `Вам звонит @${callerName} (${call.withVideo ? 'Видео' : 'Аудио'})`, () => {
                     stopDiscordRingTone();
                     activeCallId = incomingCallKey;
                     calls[incomingCallKey].status = 'accepted';
@@ -1342,9 +1417,39 @@
             viewChat.classList.remove('active'); viewSettings.classList.remove('active');
         }
 
-        navChats.addEventListener('click', () => { resetNav(); navChats.classList.add('active'); panelChats.classList.add('active'); viewChat.classList.add('active'); renderChatsList(); document.body.classList.remove('chat-opened'); });
-        navFriends.addEventListener('click', () => { resetNav(); navFriends.classList.add('active'); panelFriends.classList.add('active'); viewChat.classList.add('active'); renderFriendsPanel(); document.body.classList.remove('chat-opened'); });
-        navSettings.addEventListener('click', () => { resetNav(); navSettings.classList.add('active'); viewSettings.classList.add('active'); renderSessionsList(); document.body.classList.remove('chat-opened'); });
+        navChats.addEventListener('click', () => {
+            resetNav();
+            navChats.classList.add('active');
+            panelChats.classList.add('active');
+            viewChat.classList.add('active');
+            renderChatsList();
+            if (window.innerWidth <= 768) {
+                document.getElementById('panelChats').classList.remove('mobile-hidden');
+                document.getElementById('mainContentArea').classList.remove('mobile-chat-active');
+            }
+        });
+
+        navFriends.addEventListener('click', () => {
+            resetNav();
+            navFriends.classList.add('active');
+            panelFriends.classList.add('active');
+            viewChat.classList.add('active');
+            renderFriendsPanel();
+            if (window.innerWidth <= 768) {
+                document.getElementById('panelFriends').classList.remove('mobile-hidden');
+                document.getElementById('mainContentArea').classList.remove('mobile-chat-active');
+            }
+        });
+
+        navSettings.addEventListener('click', () => {
+            resetNav();
+            navSettings.classList.add('active');
+            viewSettings.classList.add('active');
+            renderSessionsList();
+            if (window.innerWidth <= 768) {
+                document.getElementById('mainContentArea').classList.remove('mobile-chat-active');
+            }
+        });
 
         document.getElementById('sendRequestBtn').addEventListener('click', () => {
             const targetUser = document.getElementById('addFriendInput').value.trim().toLowerCase();
@@ -1418,14 +1523,12 @@
         window.rejectReq = function(fromUser) {
             let social = getSocialDb();
             social[currentUser].incomingRequests = social[currentUser].incomingRequests.filter(u => u !== fromUser);
-            if(social[fromUser]) social[fromUser].source = social[fromUser].outgoingRequests.filter(u => u !== currentUser);
             setSocialDb(social); renderFriendsPanel();
         }
 
         window.cancelReq = function(toUser) {
             let social = getSocialDb();
             social[currentUser].outgoingRequests = social[currentUser].outgoingRequests.filter(u => u !== toUser);
-            if(social[toUser]) social[toUser].incomingRequests = social[toUser].incomingRequests.filter(u => u !== currentUser);
             setSocialDb(social); renderFriendsPanel();
         }
     </script>
