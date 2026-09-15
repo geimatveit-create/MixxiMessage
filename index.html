@@ -330,7 +330,24 @@
                         <div><h4>Юзернейм</h4><p>Уникальный ID</p></div>
                         <span id="settingsUsernameDisplay" style="color: var(--active-color); font-weight: 600;"></span>
                     </div>
-                    <div style="display: flex; justify-content: flex-end;"><button class="auth-btn" id="saveProfileBtn" style="width: auto; padding: 10px 20px;">Сохранить изменения</button></div>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 5px;">
+                        <button class="danger-btn" id="logoutAccountBtn" style="background: #331111; color: #ff3333; border: 1px solid #ff3333;">Выйти из аккаунта</button>
+                        <button class="auth-btn" id="saveProfileBtn" style="width: auto; padding: 10px 20px; margin:0;">Сохранить изменения</button>
+                    </div>
+
+                    <div class="setting-section-title">Безопасность</div>
+                    <div class="setting-item-row">
+                        <div><h4>Текущий пароль</h4><p>Введите старый пароль для подтверждения</p></div>
+                        <input type="password" class="settings-input" id="oldPasswordInput" placeholder="Старый пароль">
+                    </div>
+                    <div class="setting-item-row">
+                        <div><h4>Новый пароль</h4><p>Введите новый надежный пароль</p></div>
+                        <input type="password" class="settings-input" id="newPasswordInput" placeholder="Новый пароль">
+                    </div>
+                    <div style="display: flex; justify-content: flex-end;">
+                        <button class="success-btn" id="changePasswordBtn">Изменить пароль</button>
+                    </div>
 
                     <div class="setting-section-title">Сессии этого аккаунта</div>
                     <div id="sessionsContainer" style="display: flex; flex-direction: column; gap: 10px;"></div>
@@ -446,7 +463,6 @@
             let bans = getBansDb();
             if (bans[username]) {
                 let banData = bans[username];
-                // Проверка истек ли бан по времени
                 if (!banData.forever && banData.expiresAt && Date.now() > banData.expiresAt) {
                     delete bans[username];
                     setBansDb(bans);
@@ -590,6 +606,7 @@
             return roles[username] || 'user';
         }
 
+        // Сохранение профиля
         document.getElementById('saveProfileBtn').addEventListener('click', () => {
             const newName = document.getElementById('settingsDisplayNameInput').value.trim();
             const fileInput = document.getElementById('avatarFileInput');
@@ -623,6 +640,39 @@
             showCustomPopup("Успешно", "Профиль успешно обновлен!");
             renderChatsList(); renderFriendsPanel();
         }
+
+        // Смена пароля
+        document.getElementById('changePasswordBtn').addEventListener('click', () => {
+            const oldPass = document.getElementById('oldPasswordInput').value.trim();
+            const newPass = document.getElementById('newPasswordInput').value.trim();
+            if (!oldPass || !newPass) {
+                showCustomPopup("Ошибка", "Заполните оба поля для смены пароля!");
+                return;
+            }
+            let usersDb = getUsersDb();
+            if (usersDb[currentUser] !== oldPass) {
+                showCustomPopup("Ошибка", "Неверный текущий пароль!");
+                return;
+            }
+            usersDb[currentUser] = newPass;
+            setUsersDb(usersDb);
+            document.getElementById('oldPasswordInput').value = '';
+            document.getElementById('newPasswordInput').value = '';
+            showCustomPopup("Успешно", "Пароль успешно изменен!");
+        });
+
+        // Кнопка выхода из аккаунта
+        document.getElementById('logoutAccountBtn').addEventListener('click', () => {
+            showCustomPopup("Выход из аккаунта", "Вы действительно хотите выйти?", () => {
+                let sessions = getSessionsDb();
+                if (sessions[currentUser]) {
+                    sessions[currentUser] = sessions[currentUser].filter(s => s !== currentSessionId);
+                    setSessionsDb(sessions);
+                }
+                localStorage.removeItem('mixxi_current_user');
+                location.reload();
+            });
+        });
 
         function renderSessionsList() {
             let container = document.getElementById('sessionsContainer');
@@ -743,7 +793,7 @@
             });
         });
 
-        // Удалить чат (удалить друга из списка друзей)
+        // Удалить чат
         document.getElementById('menuDeleteChat').addEventListener('click', () => {
             if (!activeChatUser) return;
             showCustomPopup("Удалить чат", `Удалить чат с пользователем @${activeChatUser}? Он пропадет из списка ваших чатов.`, () => {
@@ -768,7 +818,7 @@
             });
         });
 
-        // Заблокировать пользователя (удалить из друзей + кик сессий)
+        // Заблокировать пользователя
         document.getElementById('menuBlockUser').addEventListener('click', () => {
             if (!activeChatUser) return;
             let target = activeChatUser;
@@ -891,7 +941,7 @@
             showCustomPopup("Роль изменена", `Роль @${activeChatUser} изменена на: ${newRole}`);
         });
 
-        // Бан с учетом причины, галочки "навсегда" и подсчета минут/часов/дней
+        // Бан с учетом причины, галочки "навсегда" и сроков
         document.getElementById('modalBanBtn').addEventListener('click', () => {
             let myRole = getUserRole(currentUser);
             if (myRole === 'user' || myRole === 'moderator') return;
