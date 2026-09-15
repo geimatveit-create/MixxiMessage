@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mixxi Messenger Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-darker: #070707;
+            --bg-dark: #0f0f0f;
+            --bg-panel: #141414;
+            --bg-hover: #1c1c1c;
+            --active-color: #ff5500;
+            --active-glow: rgba(255, 85, 0, 0.35);
+            --text-main: #f3f3f3;
+            --text-muted: #7e7e7e;
+            --border-color: #202020;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-darker);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            background-image: radial-gradient(circle at 50% 20%, #1f0e06 0%, var(--bg-darker) 70%);
+        }
+
+        /* ОКНО АВТОРИЗАЦИИ */
+        .auth-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(5, 5, 5, 0.92);
+            backdrop-filter: blur(12px);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .auth-card {
+            width: 420px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.9), 0 0 40px var(--active-glow);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .auth-logo-container { display: flex; justify-content: center; margin-bottom: 5px; }
+        .auth-card h2 { font-size: 24px; color: #fff; text-align: center; font-weight: 700; }
+        .auth-card p { font-size: 13px; color: var(--text-muted); text-align: center; margin-top: -10px; }
+
+        .auth-tabs {
+            display: flex; background: var(--bg-dark); border-radius: 12px; padding: 4px; border: 1px solid var(--border-color);
+        }
+        .auth-tab {
+            flex: 1; padding: 10px; text-align: center; font-size: 13px; font-weight: 600;
+            color: var(--text-muted); cursor: pointer; border-radius: 9px; transition: 0.2s;
+        }
+        .auth-tab.active { background: var(--bg-panel); color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.5); }
+
+        .auth-input-group { display: flex; flex-direction: column; gap: 6px; }
+        .auth-input-group label { font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px; }
+
+        .auth-input {
+            width: 100%; padding: 12px 16px; background: var(--bg-dark); border: 1px solid var(--border-color);
+            border-radius: 12px; color: #fff; font-size: 14px; outline: none; transition: 0.2s;
+        }
+        .auth-input:focus { border-color: var(--active-color); box-shadow: 0 0 10px var(--active-glow); }
+
+        .auth-btn {
+            width: 100%; padding: 14px; background: var(--active-color); border: none; border-radius: 12px;
+            color: #fff; font-weight: 600; font-size: 15px; cursor: pointer; transition: 0.2s;
+            box-shadow: 0 0 20px var(--active-glow); margin-top: 5px;
+        }
+        .auth-btn:hover { filter: brightness(1.15); }
+        .auth-error { color: #ff3333; font-size: 12px; text-align: center; min-height: 15px; }
+
+        /* ОСНОВНОЕ ОКНО ПРИЛОЖЕНИЯ */
+        .app-window {
+            width: 95vw; max-width: 1400px; height: 90vh; background: var(--bg-dark);
+            border: 1px solid var(--border-color); border-radius: 24px; display: none;
+            overflow: hidden; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.95), 0 0 40px var(--active-glow);
+            position: relative;
+        }
+
+        .nav-sidebar {
+            width: 80px; background: var(--bg-darker); border-right: 1px solid var(--border-color);
+            display: flex; flex-direction: column; align-items: center; padding: 20px 0; gap: 15px;
+        }
+
+        .nav-logo {
+            width: 48px; height: 48px; background: linear-gradient(135deg, #ff5500, #ff9900);
+            border-radius: 16px; display: flex; align-items: center; justify-content: center;
+            font-weight: 700; color: #fff; font-size: 20px; box-shadow: 0 0 15px var(--active-glow); margin-bottom: 10px;
+        }
+
+        .nav-item {
+            width: 48px; height: 48px; border-radius: 14px; background: transparent; border: none;
+            display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; position: relative;
+        }
+        .nav-item svg { fill: var(--text-muted); width: 22px; height: 22px; transition: 0.3s; }
+        .nav-item:hover, .nav-item.active { background: var(--bg-hover); border-radius: 16px; }
+        .nav-item:hover svg, .nav-item.active svg { fill: var(--active-color); }
+        .nav-item.active::before {
+            content: ''; position: absolute; left: -16px; width: 4px; height: 24px;
+            background: var(--active-color); border-radius: 0 4px 4px 0;
+        }
+
+        .sidebar-panel { width: 340px; background: var(--bg-panel); border-right: 1px solid var(--border-color); display: none; flex-direction: column; }
+        .sidebar-panel.active { display: flex; }
+
+        .panel-header { padding: 22px 20px; font-weight: 700; font-size: 18px; border-bottom: 1px solid var(--border-color); color: #fff; }
+        .search-box { padding: 15px 20px 5px 20px; }
+        .search-box input {
+            width: 100%; padding: 11px 16px; background: var(--bg-dark); border: 1px solid var(--border-color);
+            border-radius: 12px; color: #fff; font-size: 13px; outline: none;
+        }
+
+        .panel-scroll-content { flex: 1; overflow-y: auto; padding: 12px; }
+        .list-card {
+            padding: 12px 14px; border-radius: 14px; display: flex; align-items: center; gap: 14px;
+            cursor: pointer; transition: 0.2s; margin-bottom: 6px; background: var(--bg-dark); border: 1px solid var(--border-color);
+        }
+        .list-card:hover, .list-card.active { border-color: var(--active-color); background: var(--bg-hover); }
+
+        .avatar {
+            width: 44px; height: 44px; background: linear-gradient(135deg, #ff5500, #ff9900);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 15px; color: #fff; position: relative; flex-shrink: 0;
+        }
+        .avatar.online::after {
+            content: ''; position: absolute; bottom: 2px; right: 2px; width: 10px; height: 10px;
+            background: #00ff66; border: 2px solid var(--bg-panel); border-radius: 50%;
+        }
+
+        .main-content-area { flex: 1; display: flex; flex-direction: column; background: var(--bg-dark); }
+        .content-view { display: none; flex: 1; flex-direction: column; height: 100%; }
+        .content-view.active { display: flex; }
+
+        .view-header {
+            padding: 16px 28px; border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between; background: var(--bg-panel);
+        }
+
+        .chat-messages { flex: 1; padding: 28px; overflow-y: auto; display: flex; flex-direction: column; gap: 18px; }
+        .message { max-width: 60%; padding: 14px 18px; border-radius: 16px; font-size: 14px; line-height: 1.5; word-break: break-word; }
+        .message.incoming { background: var(--bg-panel); border: 1px solid var(--border-color); align-self: flex-start; color: #dedede; }
+        .message.outgoing { background: linear-gradient(135deg, #ff5500, #e04800); color: #fff; align-self: flex-end; }
+
+        .chat-input-area {
+            padding: 20px 28px; background: var(--bg-panel); border-top: 1px solid var(--border-color);
+            display: flex; gap: 14px; align-items: center;
+        }
+        .chat-input-area input {
+            flex: 1; padding: 14px 20px; background: var(--bg-dark); border: 1px solid var(--border-color);
+            border-radius: 14px; color: #fff; font-size: 14px; outline: none;
+        }
+        .send-btn {
+            background: var(--active-color); border: none; width: 48px; height: 48px;
+            border-radius: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+        }
+        .send-btn svg { fill: #fff; width: 18px; height: 18px; }
+
+        /* СТИЛИ ВКЛАДКИ КОНТАКТОВ */
+        .friend-section-title { font-size: 11px; text-transform: uppercase; color: var(--active-color); font-weight: 700; margin: 15px 0 8px 5px; letter-spacing: 0.5px;}
+        .mini-action-btn { background: var(--active-color); color: #fff; border: none; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer; }
+        .mini-action-btn.decline { background: #333; color: #aaa; }
+        .mini-action-btn:hover { filter: brightness(1.2); }
+
+        /* НАСТРОЙКИ */
+        .settings-container-pane {
+            padding: 35px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 20px; max-width: 950px;
+        }
+        .setting-section-title { font-size: 12px; text-transform: uppercase; color: var(--active-color); letter-spacing: 1px; margin-top: 10px; font-weight: 700; }
+        .setting-item-row {
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--bg-panel); border: 1px solid var(--border-color); padding: 16px 20px; border-radius: 14px; gap: 20px;
+        }
+        .setting-item-row h4 { font-size: 15px; color: #fff; margin-bottom: 2px; }
+        .setting-item-row p { font-size: 12px; color: var(--text-muted); }
+
+        .settings-input {
+            padding: 10px 14px; background: var(--bg-dark); border: 1px solid var(--border-color);
+            border-radius: 10px; color: #fff; font-size: 13px; outline: none; width: 260px;
+        }
+        .settings-input:focus { border-color: var(--active-color); }
+
+        select {
+            padding: 10px 14px; background: var(--bg-dark); border: 1px solid var(--border-color);
+            border-radius: 10px; color: #fff; font-size: 13px; outline: none; width: 280px; cursor: pointer;
+        }
+        select option { background: var(--bg-dark); color: #fff; }
+
+        .danger-btn { background: #ff3333; color: #fff; border: none; padding: 10px 18px; border-radius: 10px; font-weight: 600; cursor: pointer; }
+        .danger-btn:hover { background: #e02828; }
+    </style>
+</head>
+<body>
+
+    <!-- ОКНО АВТОРИЗАЦИИ -->
+    <div class="auth-overlay" id="authOverlay">
+        <div class="auth-card">
+            <div class="auth-logo-container"><div class="nav-logo" style="margin:0;">M</div></div>
+            <h2 id="authTitle">Добро пожаловать</h2>
+            <p id="authSubtitle">Войдите в свой аккаунт Mixxi</p>
+            <div class="auth-tabs">
+                <div class="auth-tab active" id="tabLoginBtn">Вход</div>
+                <div class="auth-tab" id="tabRegisterBtn">Регистрация</div>
+            </div>
+            <div class="auth-input-group">
+                <label>Имя пользователя (Логин)</label>
+                <input type="text" class="auth-input" id="authUsername" placeholder="Введите уникальный никнейм">
+            </div>
+            <div class="auth-input-group">
+                <label>Пароль</label>
+                <input type="password" class="auth-input" id="authPassword" placeholder="Введите пароль">
+            </div>
+            <div class="auth-error" id="authErrorMsg"></div>
+            <button class="auth-btn" id="authSubmitBtn">Войти в систему</button>
+        </div>
+    </div>
+
+    <!-- ОСНОВНОЙ ИНТЕРФЕЙС -->
+    <div class="app-window" id="appWindow">
+        <nav class="nav-sidebar">
+            <div class="nav-logo" id="userLogoBadge" title="Профиль">M</div>
+            <button class="nav-item active" id="navChats" title="Сообщения">
+                <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+            </button>
+            <button class="nav-item" id="navFriends" title="Контакты и заявки">
+                <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3z"/></svg>
+            </button>
+            <button class="nav-item" id="navSettings" title="Настройки">
+                <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36.25c-.59.24-1.13.56-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c-.5.38-1.03.7-1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c-.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+            </button>
+        </nav>
+
+        <!-- ПАНЕЛЬ ЧАТОВ -->
+        <div class="sidebar-panel active" id="panelChats">
+            <div class="panel-header">Сообщения</div>
+            <div class="search-box"><input type="text" placeholder="Поиск чатов..."></div>
+            <div class="panel-scroll-content" id="chatsListContainer">
+                <!-- Динамический список чатов с друзьями -->
+            </div>
+        </div>
+
+        <!-- ПАНЕЛЬ КОНТАКТОВ И ЗАЯВОК -->
+        <div class="sidebar-panel" id="panelFriends">
+            <div class="panel-header">Контакты</div>
+            <div class="search-box">
+                <input type="text" id="addFriendInput" placeholder="Добавить по юзернейму...">
+            </div>
+            <div style="padding: 0 20px 10px 20px;">
+                <button class="auth-btn" id="sendRequestBtn" style="padding: 10px; font-size: 13px; margin-top: 5px;">Отправить заявку</button>
+                <div id="friendMsgStatus" style="font-size: 11px; color: var(--active-color); margin-top: 4px; min-height: 14px; text-align: center;"></div>
+            </div>
+            <div class="panel-scroll-content" id="friendsPanelContent">
+                <!-- Заявки и друзья -->
+            </div>
+        </div>
+
+        <!-- ОСНОВНАЯ ОБЛАСТЬ -->
+        <main class="main-content-area">
+            <div class="content-view active" id="viewChat">
+                <div class="view-header" id="chatHeaderView">
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <div class="avatar online" id="activeChatAvatar" style="width:38px;height:38px;font-size:13px;">M</div>
+                        <div>
+                            <h3 id="activeChatName" style="font-size:15px; color:#fff;">Выберите чат</h3>
+                            <p id="activeChatStatus" style="font-size:11px; color:var(--text-muted);">начните общение с друзьями</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-messages" id="messageContainer">
+                    <div class="message incoming">Выберите друга во вкладке сообщений слева или добавьте нового во вкладке контактов! 🚀</div>
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" id="userInput" placeholder="Введите сообщение..." disabled>
+                    <button class="send-btn" id="sendBtn">
+                        <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- НАСТРОЙКИ С ИЗМЕНЕНИЕМ ИМЕНИ -->
+            <div class="content-view" id="viewSettings">
+                <div class="settings-container-pane">
+                    <h2 style="font-size: 22px; color: #fff;">Настройки профиля и системы</h2>
+                    
+                    <div class="setting-section-title">Профиль</div>
+                    <div class="setting-item-row">
+                        <div>
+                            <h4>Имя профиля (Отображаемое)</h4>
+                            <p>Его можно свободно менять</p>
+                        </div>
+                        <input type="text" class="settings-input" id="settingsDisplayNameInput">
+                    </div>
+                    <div class="setting-item-row">
+                        <div>
+                            <h4>Юзернейм (Логин)</h4>
+                            <p>Уникальный ID, изменить нельзя</p>
+                        </div>
+                        <span id="settingsUsernameDisplay" style="color: var(--active-color); font-weight: 600; font-size: 14px;"></span>
+                    </div>
+                    <div style="display: flex; justify-content: flex-end;">
+                        <button class="auth-btn" id="saveProfileBtn" style="width: auto; padding: 10px 20px;">Сохранить имя</button>
+                    </div>
+
+                    <div class="setting-section-title">Аккаунт</div>
+                    <div class="setting-item-row">
+                        <div>
+                            <h4>Сессия</h4>
+                            <p>Выйти из текущей учетной записи</p>
+                        </div>
+                        <button class="danger-btn" id="logoutBtn">Выйти</button>
+                    </div>
+
+                    <div class="setting-section-title">Аудио и Звук</div>
+                    <div class="setting-item-row">
+                        <div>
+                            <h4>Микрофон</h4>
+                            <p>Выбор устройства для записи голоса</p>
+                        </div>
+                        <select id="audioInputSelect"><option>Загрузка устройств...</option></select>
+                    </div>
+                    <div class="setting-item-row">
+                        <div>
+                            <h4>Динамики / Наушники</h4>
+                            <p>Выбор устройства вывода звука</p>
+                        </div>
+                        <select id="audioOutputSelect"><option>Загрузка устройств...</option></select>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let isRegisterMode = false;
+        let currentUser = null;
+        let activeChatUser = null; // с кем сейчас открыт чат
+
+        const authOverlay = document.getElementById('authOverlay');
+        const appWindow = document.getElementById('appWindow');
+        const tabLoginBtn = document.getElementById('tabLoginBtn');
+        const tabRegisterBtn = document.getElementById('tabRegisterBtn');
+        const authTitle = document.getElementById('authTitle');
+        const authSubtitle = document.getElementById('authSubtitle');
+        const authSubmitBtn = document.getElementById('authSubmitBtn');
+        const authUsername = document.getElementById('authUsername');
+        const authPassword = document.getElementById('authPassword');
+        const authErrorMsg = document.getElementById('authErrorMsg');
+        
+        const userLogoBadge = document.getElementById('userLogoBadge');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        function getUsersDb() { return JSON.parse(localStorage.getItem('mixxi_users_db') || '{}'); }
+        function setUsersDb(db) { localStorage.setItem('mixxi_users_db', JSON.stringify(db)); }
+        
+        function getProfilesDb() { return JSON.parse(localStorage.getItem('mixxi_profiles_db') || '{}'); }
+        function setProfilesDb(db) { localStorage.setItem('mixxi_profiles_db', JSON.stringify(db)); }
+
+        function getSocialDb() { return JSON.parse(localStorage.getItem('mixxi_social_db') || '{}'); }
+        function setSocialDb(db) { localStorage.setItem('mixxi_social_db', JSON.stringify(db)); }
+
+        function getMessagesDb() { return JSON.parse(localStorage.getItem('mixxi_messages_db') || '{}'); }
+        function setMessagesDb(db) { localStorage.setItem('mixxi_messages_db', JSON.stringify(db)); }
+
+        const activeUserSession = localStorage.getItem('mixxi_current_user');
+        if (activeUserSession) {
+            currentUser = activeUserSession;
+            initApp(currentUser);
+        }
+
+        tabLoginBtn.addEventListener('click', () => {
+            isRegisterMode = false;
+            tabLoginBtn.classList.add('active');
+            tabRegisterBtn.classList.remove('active');
+            authTitle.innerText = "Добро пожаловать";
+            authSubtitle.innerText = "Войдите в свой аккаунт Mixxi";
+            authSubmitBtn.innerText = "Войти в систему";
+            authErrorMsg.innerText = "";
+        });
+
+        tabRegisterBtn.addEventListener('click', () => {
+            isRegisterMode = true;
+            tabRegisterBtn.classList.add('active');
+            tabLoginBtn.classList.remove('active');
+            authTitle.innerText = "Регистрация";
+            authSubtitle.innerText = "Создайте новый профиль в Mixxi";
+            authSubmitBtn.innerText = "Зарегистрироваться";
+            authErrorMsg.innerText = "";
+        });
+
+        authSubmitBtn.addEventListener('click', () => {
+            const user = authUsername.value.trim().toLowerCase();
+            const pass = authPassword.value.trim();
+            if (!user || !pass) { authErrorMsg.innerText = "Заполните все поля!"; return; }
+
+            let usersDb = getUsersDb();
+            let profiles = getProfilesDb();
+
+            if (isRegisterMode) {
+                if (usersDb[user]) { authErrorMsg.innerText = "Такой пользователь уже существует!"; return; }
+                usersDb[user] = pass;
+                setUsersDb(usersDb);
+                
+                profiles[user] = { displayName: user };
+                setProfilesDb(profiles);
+
+                let social = getSocialDb();
+                social[user] = { friends: [], incomingRequests: [], outgoingRequests: [] };
+                setSocialDb(social);
+
+                localStorage.setItem('mixxi_current_user', user);
+                currentUser = user;
+                initApp(user);
+            } else {
+                if (!usersDb[user] || usersDb[user] !== pass) { authErrorMsg.innerText = "Неверный логин или пароль!"; return; }
+                localStorage.setItem('mixxi_current_user', user);
+                currentUser = user;
+                initApp(user);
+            }
+        });
+
+        function initApp(username) {
+            authOverlay.style.display = 'none';
+            appWindow.style.display = 'flex';
+            
+            let profiles = getProfilesDb();
+            let currentName = profiles[username]?.displayName || username;
+
+            userLogoBadge.innerText = currentName.charAt(0).toUpperCase();
+            
+            document.getElementById('settingsUsernameDisplay').innerText = "@" + username;
+            document.getElementById('settingsDisplayNameInput').value = currentName;
+
+            loadAudioDevices();
+            renderFriendsPanel();
+            renderChatsList();
+        }
+
+        logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('mixxi_current_user');
+            location.reload();
+        });
+
+        // Сохранение имени профиля
+        document.getElementById('saveProfileBtn').addEventListener('click', () => {
+            const newName = document.getElementById('settingsDisplayNameInput').value.trim();
+            if(!newName) return;
+            let profiles = getProfilesDb();
+            if(!profiles[currentUser]) profiles[currentUser] = {};
+            profiles[currentUser].displayName = newName;
+            setProfilesDb(profiles);
+            userLogoBadge.innerText = newName.charAt(0).toUpperCase();
+            alert("Имя профиля успешно обновлено!");
+            renderChatsList();
+            renderFriendsPanel();
+        });
+
+        // ЛОГИКА ДРУЗЕЙ И ЗАЯВОК (Изолированная для каждого аккаунта)
+        const sendRequestBtn = document.getElementById('sendRequestBtn');
+        const addFriendInput = document.getElementById('addFriendInput');
+        const friendMsgStatus = document.getElementById('friendMsgStatus');
+
+        sendRequestBtn.addEventListener('click', () => {
+            const targetUser = addFriendInput.value.trim().toLowerCase();
+            if (!targetUser) return;
+
+            if (targetUser === currentUser) {
+                friendMsgStatus.innerText = "Нельзя добавить самого себя!";
+                return;
+            }
+
+            let usersDb = getUsersDb();
+            if (!usersDb[targetUser]) {
+                friendMsgStatus.innerText = "Пользователь не найден!";
+                return;
+            }
+
+            let social = getSocialDb();
+            if (!social[currentUser]) social[currentUser] = { friends: [], incomingRequests: [], outgoingRequests: [] };
+            if (!social[targetUser]) social[targetUser] = { friends: [], incomingRequests: [], outgoingRequests: [] };
+
+            if (social[currentUser].friends.includes(targetUser)) {
+                friendMsgStatus.innerText = "Вы уже в друзьях!";
+                return;
+            }
+            if (social[currentUser].outgoingRequests.includes(targetUser)) {
+                friendMsgStatus.innerText = "Заявка уже отправлена!";
+                return;
+            }
+            if (social[currentUser].incomingRequests.includes(targetUser)) {
+                friendMsgStatus.innerText = "Этот пользователь уже прислал вам заявку!";
+                return;
+            }
+
+            social[currentUser].outgoingRequests.push(targetUser);
+            social[targetUser].incomingRequests.push(currentUser);
+
+            setSocialDb(social);
+            addFriendInput.value = "";
+            friendMsgStatus.innerText = "Заявка успешно отправлена!";
+            renderFriendsPanel();
+        });
+
+        function renderFriendsPanel() {
+            const content = document.getElementById('friendsPanelContent');
+            let social = getSocialDb();
+            let profiles = getProfilesDb();
+            let myData = social[currentUser] || { friends: [], incomingRequests: [], outgoingRequests: [] };
+
+            let html = '';
+
+            // 1. Входящие заявки
+            html += `<div class="friend-section-title">Входящие заявки (${myData.incomingRequests.length})</div>`;
+            if (myData.incomingRequests.length === 0) {
+                html += `<p style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">Нет новых заявок</p>`;
+            } else {
+                myData.incomingRequests.forEach(fromUser => {
+                    let dName = profiles[fromUser]?.displayName || fromUser;
+                    html += `
+                        <div class="list-card" style="justify-content:space-between;">
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <div class="avatar" style="width:32px;height:32px;font-size:12px;">${dName.charAt(0).toUpperCase()}</div>
+                                <div>
+                                    <span style="font-size:13px; font-weight:600; display:block; color:#fff;">${dName}</span>
+                                    <span style="font-size:11px; color:var(--text-muted);">@${fromUser}</span>
+                                </div>
+                            </div>
+                            <div style="display:flex; gap:6px;">
+                                <button class="mini-action-btn" onclick="acceptRequest('${fromUser}')">Принять</button>
+                                <button class="mini-action-btn decline" onclick="rejectRequest('${fromUser}')">Х</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            // 2. Исходящие заявки (с возможностью отмены)
+            html += `<div class="friend-section-title">Ожидающие отправленные (${myData.outgoingRequests.length})</div>`;
+            if (myData.outgoingRequests.length === 0) {
+                html += `<p style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">Нет активных исходящих</p>`;
+            } else {
+                myData.outgoingRequests.forEach(toUser => {
+                    let dName = profiles[toUser]?.displayName || toUser;
+                    html += `
+                        <div class="list-card" style="justify-content:space-between;">
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <div class="avatar" style="width:32px;height:32px;font-size:12px;">${dName.charAt(0).toUpperCase()}</div>
+                                <div>
+                                    <span style="font-size:13px; font-weight:600; display:block; color:#fff;">${dName}</span>
+                                    <span style="font-size:11px; color:var(--text-muted);">@${toUser}</span>
+                                </div>
+                            </div>
+                            <button class="mini-action-btn decline" onclick="cancelOutgoingRequest('${toUser}')" title="Отменить заявку">Отменить</button>
+                        </div>
+                    `;
+                });
+            }
+
+            // 3. Список друзей
+            html += `<div class="friend-section-title">Список друзей (${myData.friends.length})</div>`;
+            if (myData.friends.length === 0) {
+                html += `<p style="font-size:12px; color:var(--text-muted);">Пока нет друзей</p>`;
+            } else {
+                myData.friends.forEach(friend => {
+                    let dName = profiles[friend]?.displayName || friend;
+                    html += `
+                        <div class="list-card" onclick="openChatWith('${friend}')">
+                            <div class="avatar online" style="width:36px;height:36px;font-size:13px;">${dName.charAt(0).toUpperCase()}</div>
+                            <div style="flex:1;">
+                                <h4 style="font-size:13px; color:#fff;">${dName}</h4>
+                                <p style="font-size:11px; color:#00ff66;">@${friend}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            content.innerHTML = html;
+        }
+
+        window.acceptRequest = function(fromUser) {
+            let social = getSocialDb();
+            let myData = social[currentUser];
+            let senderData = social[fromUser];
+
+            myData.incomingRequests = myData.incomingRequests.filter(u => u !== fromUser);
+            if (!myData.friends.includes(fromUser)) myData.friends.push(fromUser);
+
+            if (senderData) {
+                senderData.outgoingRequests = senderData.outgoingRequests.filter(u => u !== currentUser);
+                if (!senderData.friends.includes(currentUser)) senderData.friends.push(currentUser);
+            }
+
+            setSocialDb(social);
+            renderFriendsPanel();
+            renderChatsList();
+        }
+
+        window.rejectRequest = function(fromUser) {
+            let social = getSocialDb();
+            let myData = social[currentUser];
+            let senderData = social[fromUser];
+
+            myData.incomingRequests = myData.incomingRequests.filter(u => u !== fromUser);
+            if (senderData) {
+                senderData.outgoingRequests = senderData.outgoingRequests.filter(u => u !== currentUser);
+            }
+
+            setSocialDb(social);
+            renderFriendsPanel();
+        }
+
+        window.cancelOutgoingRequest = function(toUser) {
+            let social = getSocialDb();
+            let myData = social[currentUser];
+            let targetData = social[toUser];
+
+            myData.outgoingRequests = myData.outgoingRequests.filter(u => u !== toUser);
+            if (targetData) {
+                targetData.incomingRequests = targetData.incomingRequests.filter(u => u !== currentUser);
+            }
+
+            setSocialDb(social);
+            renderFriendsPanel();
+        }
+
+        // Рендер списка чатов с друзьями
+        function renderChatsList() {
+            const container = document.getElementById('chatsListContainer');
+            let social = getSocialDb();
+            let profiles = getProfilesDb();
+            let myData = social[currentUser] || { friends: [] };
+
+            let html = '';
+            if (myData.friends.length === 0) {
+                html = `<p style="font-size:12px; color:var(--text-muted); padding:15px; text-align:center;">Здесь появятся ваши друзья для переписки</p>`;
+            } else {
+                myData.friends.forEach(friend => {
+                    let dName = profiles[friend]?.displayName || friend;
+                    let isActive = activeChatUser === friend ? 'active' : '';
+                    html += `
+                        <div class="list-card ${isActive}" onclick="openChatWith('${friend}')">
+                            <div class="avatar online">${dName.charAt(0).toUpperCase()}</div>
+                            <div style="flex:1;">
+                                <h4 style="font-size:14px; color:#fff;">${dName}</h4>
+                                <p style="font-size:12px; color:var(--text-muted);">@${friend}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            container.innerHTML = html;
+        }
+
+        // Открытие чата с конкретным другом
+        window.openChatWith = function(friendUsername) {
+            activeChatUser = friendUsername;
+            let profiles = getProfilesDb();
+            let dName = profiles[friendUsername]?.displayName || friendUsername;
+
+            document.getElementById('activeChatName').innerText = dName;
+            document.getElementById('activeChatStatus').innerText = "@" + friendUsername;
+            document.getElementById('activeChatAvatar').innerText = dName.charAt(0).toUpperCase();
+            document.getElementById('userInput').disabled = false;
+
+            // Переключаемся на вкладку чатов если были в контактах
+            resetNav();
+            document.getElementById('navChats').classList.add('active');
+            document.getElementById('panelChats').classList.add('active');
+            document.getElementById('viewChat').classList.add('active');
+
+            renderChatsList();
+            loadMessages();
+        }
+
+        // Уникальный ключ для сохранения диалога между двумя пользователями
+        function getChatKey(user1, user2) {
+            return [user1, user2].sort().join('_vs_');
+        }
+
+        function loadMessages() {
+            if (!activeChatUser) return;
+            const container = document.getElementById('messageContainer');
+            let messagesDb = getMessagesDb();
+            let chatKey = getChatKey(currentUser, activeChatUser);
+            let chatHistory = messagesDb[chatKey] || [];
+
+            let html = '';
+            if (chatHistory.length === 0) {
+                html = `<div class="message incoming">Это начало вашего диалога с пользователем. Напишите первое сообщение! 👋</div>`;
+            } else {
+                chatHistory.forEach(msg => {
+                    let isOut = msg.sender === currentUser;
+                    html += `<div class="message ${isOut ? 'outgoing' : 'incoming'}">${escapeHtml(msg.text)}</div>`;
+                });
+            }
+            container.innerHTML = html;
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function escapeHtml(text) {
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        // Отправка сообщений
+        const input = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
+
+        function sendMessage() {
+            const txt = input.value.trim();
+            if (!txt || !activeChatUser) return;
+
+            let messagesDb = getMessagesDb();
+            let chatKey = getChatKey(currentUser, activeChatUser);
+            if (!messagesDb[chatKey]) messagesDb[chatKey] = [];
+
+            messagesDb[chatKey].push({
+                sender: currentUser,
+                text: txt,
+                time: Date.now()
+            });
+
+            setMessagesDb(messagesDb);
+            input.value = '';
+            loadMessages();
+        }
+
+        sendBtn.addEventListener('click', sendMessage);
+        input.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+
+        // Навигация
+        const navChats = document.getElementById('navChats');
+        const navFriends = document.getElementById('navFriends');
+        const navSettings = document.getElementById('navSettings');
+
+        const panelChats = document.getElementById('panelChats');
+        const panelFriends = document.getElementById('panelFriends');
+        const viewChat = document.getElementById('viewChat');
+        const viewSettings = document.getElementById('viewSettings');
+
+        function resetNav() {
+            navChats.classList.remove('active');
+            navFriends.classList.remove('active');
+            navSettings.classList.remove('active');
+            panelChats.classList.remove('active');
+            panelFriends.classList.remove('active');
+            viewChat.classList.remove('active');
+            viewSettings.classList.remove('active');
+        }
+
+        navChats.addEventListener('click', () => {
+            resetNav();
+            navChats.classList.add('active');
+            panelChats.classList.add('active');
+            viewChat.classList.add('active');
+            renderChatsList();
+        });
+
+        navFriends.addEventListener('click', () => {
+            resetNav();
+            navFriends.classList.add('active');
+            panelFriends.classList.add('active');
+            viewChat.classList.add('active');
+            renderFriendsPanel();
+        });
+
+        navSettings.addEventListener('click', () => {
+            resetNav();
+            navSettings.classList.add('active');
+            viewSettings.classList.add('active');
+        });
+
+        async function loadAudioDevices() {
+            const micSelect = document.getElementById('audioInputSelect');
+            const speakerSelect = document.getElementById('audioOutputSelect');
+            try {
+                if (!navigator.mediaDevices?.enumerateDevices) return;
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    stream.getTracks().forEach(track => track.stop());
+                } catch(e) {}
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                micSelect.innerHTML = ''; speakerSelect.innerHTML = '';
+                devices.forEach(device => {
+                    const option = document.createElement('option');
+                    option.value = device.deviceId;
+                    option.text = device.label || `${device.kind === 'audioinput' ? 'Микрофон' : 'Динамики'} (${device.deviceId.slice(0, 5)}...)`;
+                    if (device.kind === 'audioinput') micSelect.appendChild(option);
+                    else if (device.kind === 'audiooutput') speakerSelect.appendChild(option);
+                });
+                if (!micSelect.options.length) micSelect.innerHTML = '<option value="">По умолчанию</option>';
+                if (!speakerSelect.options.length) speakerSelect.innerHTML = '<option value="">По умолчанию</option>';
+            } catch (e) {}
+        }
+    </script>
+</body>
+</html>
