@@ -89,7 +89,6 @@
             box-shadow: 0 0 20px var(--active-glow); margin-top: 5px;
         }
         .auth-btn:hover { filter: brightness(1.15); }
-
         .auth-error { color: #ff3333; font-size: 12px; text-align: center; min-height: 15px; }
 
         /* ОСНОВНОЕ ОКНО ПРИЛОЖЕНИЯ */
@@ -126,19 +125,19 @@
         .sidebar-panel { width: 340px; background: var(--bg-panel); border-right: 1px solid var(--border-color); display: none; flex-direction: column; }
         .sidebar-panel.active { display: flex; }
 
-        .panel-header { padding: 22px 20px; font-weight: 700; font-size: 18px; border-bottom: 1px solid var(--border-color); color: #fff; }
-        .search-box { padding: 15px 20px; }
+        .panel-header { padding: 22px 20px; font-weight: 700; font-size: 18px; border-bottom: 1px solid var(--border-color); color: #fff; display: flex; justify-content: space-between; align-items: center;}
+        .search-box { padding: 15px 20px 5px 20px; }
         .search-box input {
             width: 100%; padding: 11px 16px; background: var(--bg-dark); border: 1px solid var(--border-color);
             border-radius: 12px; color: #fff; font-size: 13px; outline: none;
         }
 
-        .panel-scroll-content { flex: 1; overflow-y: auto; padding: 0 12px; }
+        .panel-scroll-content { flex: 1; overflow-y: auto; padding: 12px; }
         .list-card {
             padding: 12px 14px; border-radius: 14px; display: flex; align-items: center; gap: 14px;
-            cursor: pointer; transition: 0.2s; margin-bottom: 6px;
+            cursor: pointer; transition: 0.2s; margin-bottom: 6px; background: var(--bg-dark); border: 1px solid var(--border-color);
         }
-        .list-card:hover, .list-card.active { background: var(--bg-hover); }
+        .list-card:hover { border-color: var(--active-color); }
 
         .avatar {
             width: 44px; height: 44px; background: linear-gradient(135deg, #ff5500, #ff9900);
@@ -178,6 +177,12 @@
         }
         .send-btn svg { fill: #fff; width: 18px; height: 18px; }
 
+        /* СТИЛИ ВКЛАДКИ КОНТАКТОВ И ЗАЯВОК */
+        .friend-section-title { font-size: 11px; text-transform: uppercase; color: var(--active-color); font-weight: 700; margin: 15px 0 8px 5px; letter-spacing: 0.5px;}
+        .mini-action-btn { background: var(--active-color); color: #fff; border: none; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer; }
+        .mini-action-btn.decline { background: #333; color: #aaa; }
+        .mini-action-btn:hover { filter: brightness(1.2); }
+
         /* НАСТРОЙКИ */
         .settings-container-pane {
             padding: 35px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 20px; max-width: 950px;
@@ -192,46 +197,35 @@
 
         select {
             padding: 10px 14px; background: var(--bg-dark); border: 1px solid var(--border-color);
-            border-radius: 10px; color: #fff; font-size: 13px; outline: none; width: 280px;
-            cursor: pointer; text-overflow: ellipsis;
+            border-radius: 10px; color: #fff; font-size: 13px; outline: none; width: 280px; cursor: pointer;
         }
         select option { background: var(--bg-dark); color: #fff; }
 
-        .danger-btn {
-            background: #ff3333; color: #fff; border: none; padding: 10px 18px;
-            border-radius: 10px; font-weight: 600; cursor: pointer; transition: 0.2s;
-        }
+        .danger-btn { background: #ff3333; color: #fff; border: none; padding: 10px 18px; border-radius: 10px; font-weight: 600; cursor: pointer; }
         .danger-btn:hover { background: #e02828; }
     </style>
 </head>
 <body>
 
-    <!-- ОКНО АВТОРИЗАЦИИ / РЕГИСТРАЦИИ -->
+    <!-- ОКНО АВТОРИЗАЦИИ -->
     <div class="auth-overlay" id="authOverlay">
         <div class="auth-card">
-            <div class="auth-logo-container">
-                <div class="nav-logo" style="margin:0;">M</div>
-            </div>
+            <div class="auth-logo-container"><div class="nav-logo" style="margin:0;">M</div></div>
             <h2 id="authTitle">Добро пожаловать</h2>
             <p id="authSubtitle">Войдите в свой аккаунт Mixxi</p>
-
             <div class="auth-tabs">
                 <div class="auth-tab active" id="tabLoginBtn">Вход</div>
                 <div class="auth-tab" id="tabRegisterBtn">Регистрация</div>
             </div>
-
             <div class="auth-input-group">
                 <label>Имя пользователя</label>
                 <input type="text" class="auth-input" id="authUsername" placeholder="Введите никнейм">
             </div>
-
             <div class="auth-input-group">
                 <label>Пароль</label>
                 <input type="password" class="auth-input" id="authPassword" placeholder="Введите пароль">
             </div>
-
             <div class="auth-error" id="authErrorMsg"></div>
-
             <button class="auth-btn" id="authSubmitBtn">Войти в систему</button>
         </div>
     </div>
@@ -243,7 +237,7 @@
             <button class="nav-item active" id="navChats" title="Сообщения">
                 <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
             </button>
-            <button class="nav-item" id="navFriends" title="Контакты">
+            <button class="nav-item" id="navFriends" title="Контакты и заявки">
                 <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3z"/></svg>
             </button>
             <button class="nav-item" id="navSettings" title="Настройки">
@@ -256,7 +250,7 @@
             <div class="panel-header">Сообщения</div>
             <div class="search-box"><input type="text" placeholder="Поиск чатов..."></div>
             <div class="panel-scroll-content">
-                <div class="list-card active">
+                <div class="list-card">
                     <div class="avatar online">AI</div>
                     <div style="flex:1;">
                         <h4 style="font-size:14px; color:#fff;">Mixxi Support</h4>
@@ -266,24 +260,23 @@
             </div>
         </div>
 
-        <!-- ПАНЕЛЬ КОНТАКТОВ -->
+        <!-- ПАНЕЛЬ КОНТАКТОВ И ЗАЯВОК (ВКЛАДКА 2) -->
         <div class="sidebar-panel" id="panelFriends">
             <div class="panel-header">Контакты</div>
-            <div class="search-box"><input type="text" placeholder="Поиск контактов..."></div>
-            <div class="panel-scroll-content">
-                <div class="list-card">
-                    <div class="avatar online">G</div>
-                    <div style="flex:1;">
-                        <h4 style="font-size:14px; color:#fff;">Gmoax</h4>
-                        <p style="font-size:12px; color:#00ff66;">В сети</p>
-                    </div>
-                </div>
+            <div class="search-box">
+                <input type="text" id="addFriendInput" placeholder="Добавить по юзернейму...">
+            </div>
+            <div style="padding: 0 20px 10px 20px;">
+                <button class="auth-btn" id="sendRequestBtn" style="padding: 10px; font-size: 13px; margin-top: 5px;">Отправить заявку</button>
+                <div id="friendMsgStatus" style="font-size: 11px; color: var(--active-color); margin-top: 4px; min-height: 14px; text-align: center;"></div>
+            </div>
+            <div class="panel-scroll-content" id="friendsPanelContent">
+                <!-- Динамически заполняется через JS -->
             </div>
         </div>
 
         <!-- ОСНОВНАЯ ОБЛАСТЬ -->
         <main class="main-content-area">
-            <!-- ВИД ЧАТА -->
             <div class="content-view active" id="viewChat">
                 <div class="view-header">
                     <div style="display:flex; align-items:center; gap:12px;">
@@ -294,13 +287,9 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="chat-messages" id="messageContainer">
-                    <div class="message incoming">
-                        Добро пожаловать в мессенджер Mixxi! Вы вошли под своей учетной записью. 🚀
-                    </div>
+                    <div class="message incoming">Добро пожаловать в мессенджер Mixxi! Перейдите во вкладку контактов, чтобы добавить друзей по юзернейму. 🚀</div>
                 </div>
-
                 <div class="chat-input-area">
                     <input type="text" id="userInput" placeholder="Введите сообщение...">
                     <button class="send-btn" id="sendBtn">
@@ -309,11 +298,9 @@
                 </div>
             </div>
 
-            <!-- ВИД НАСТРОЕК -->
             <div class="content-view" id="viewSettings">
                 <div class="settings-container-pane">
                     <h2 style="font-size: 22px; color: #fff;">Настройки устройства и системы</h2>
-                    
                     <div class="setting-section-title">Аккаунт</div>
                     <div class="setting-item-row">
                         <div>
@@ -322,37 +309,20 @@
                         </div>
                         <button class="danger-btn" id="logoutBtn">Выйти из аккаунта</button>
                     </div>
-
                     <div class="setting-section-title">Аудио и Звук</div>
                     <div class="setting-item-row">
                         <div>
                             <h4>Микрофон</h4>
                             <p>Выбор устройства для записи голоса</p>
                         </div>
-                        <select id="audioInputSelect">
-                            <option>Загрузка устройств...</option>
-                        </select>
+                        <select id="audioInputSelect"><option>Загрузка устройств...</option></select>
                     </div>
-
                     <div class="setting-item-row">
                         <div>
                             <h4>Динамики / Наушники</h4>
                             <p>Выбор устройства вывода звука</p>
                         </div>
-                        <select id="audioOutputSelect">
-                            <option>Загрузка устройств...</option>
-                        </select>
-                    </div>
-
-                    <div class="setting-item-row">
-                        <div>
-                            <h4>AI Шумоподавление</h4>
-                            <p>Фильтрация посторонних шумов микрофона</p>
-                        </div>
-                        <select>
-                            <option>Включено (Максимальное)</option>
-                            <option>Отключено</option>
-                        </select>
+                        <select id="audioOutputSelect"><option>Загрузка устройств...</option></select>
                     </div>
                 </div>
             </div>
@@ -361,6 +331,8 @@
 
     <script>
         let isRegisterMode = false;
+        let currentUser = null;
+
         const authOverlay = document.getElementById('authOverlay');
         const appWindow = document.getElementById('appWindow');
         const tabLoginBtn = document.getElementById('tabLoginBtn');
@@ -376,10 +348,17 @@
         const userLogoBadge = document.getElementById('userLogoBadge');
         const logoutBtn = document.getElementById('logoutBtn');
 
-        // Проверяем сессию при загрузке
+        // Базы данных хранилища
+        function getUsersDb() { return JSON.parse(localStorage.getItem('mixxi_users_db') || '{}'); }
+        function setUsersDb(db) { localStorage.setItem('mixxi_users_db', JSON.stringify(db)); }
+        
+        function getSocialDb() { return JSON.parse(localStorage.getItem('mixxi_social_db') || '{}'); }
+        function setSocialDb(db) { localStorage.setItem('mixxi_social_db', JSON.stringify(db)); }
+
         const activeUser = localStorage.getItem('mixxi_current_user');
         if (activeUser) {
-            initApp(activeUser);
+            currentUser = activeUser;
+            initApp(currentUser);
         }
 
         tabLoginBtn.addEventListener('click', () => {
@@ -405,29 +384,26 @@
         authSubmitBtn.addEventListener('click', () => {
             const user = authUsername.value.trim();
             const pass = authPassword.value.trim();
+            if (!user || !pass) { authErrorMsg.innerText = "Заполните все поля!"; return; }
 
-            if (!user || !pass) {
-                authErrorMsg.innerText = "Заполните все поля!";
-                return;
-            }
-
-            let usersDb = JSON.parse(localStorage.getItem('mixxi_users_db') || '{}');
-
+            let usersDb = getUsersDb();
             if (isRegisterMode) {
-                if (usersDb[user]) {
-                    authErrorMsg.innerText = "Такой пользователь уже существует!";
-                    return;
-                }
+                if (usersDb[user]) { authErrorMsg.innerText = "Такой пользователь уже существует!"; return; }
                 usersDb[user] = pass;
-                localStorage.setItem('mixxi_users_db', JSON.stringify(usersDb));
+                setUsersDb(usersDb);
+                
+                // Инициализируем соц. данные
+                let social = getSocialDb();
+                social[user] = { friends: [], incomingRequests: [], outgoingRequests: [] };
+                setSocialDb(social);
+
                 localStorage.setItem('mixxi_current_user', user);
+                currentUser = user;
                 initApp(user);
             } else {
-                if (!usersDb[user] || usersDb[user] !== pass) {
-                    authErrorMsg.innerText = "Неверный логин или пароль!";
-                    return;
-                }
+                if (!usersDb[user] || usersDb[user] !== pass) { authErrorMsg.innerText = "Неверный логин или пароль!"; return; }
                 localStorage.setItem('mixxi_current_user', user);
+                currentUser = user;
                 initApp(user);
             }
         });
@@ -438,6 +414,7 @@
             currentUsernameDisplay.innerText = "@" + username;
             userLogoBadge.innerText = username.charAt(0).toUpperCase();
             loadAudioDevices();
+            renderFriendsPanel();
         }
 
         logoutBtn.addEventListener('click', () => {
@@ -445,47 +422,148 @@
             location.reload();
         });
 
-        // Безопасная загрузка аудиоустройств без зависаний
-        async function loadAudioDevices() {
-            const micSelect = document.getElementById('audioInputSelect');
-            const speakerSelect = document.getElementById('audioOutputSelect');
+        // ЛОГИКА ДОБАВЛЕНИЯ В ДРУЗЬЯ И ЗАЯВОК
+        const sendRequestBtn = document.getElementById('sendRequestBtn');
+        const addFriendInput = document.getElementById('addFriendInput');
+        const friendMsgStatus = document.getElementById('friendMsgStatus');
 
-            try {
-                if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
-                    throw new Error("API не поддерживается");
-                }
+        sendRequestBtn.addEventListener('click', () => {
+            const targetUser = addFriendInput.value.trim();
+            if (!targetUser) return;
 
-                // Запрашиваем разрешение мягко
-                try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    stream.getTracks().forEach(track => track.stop()); // сразу останавливаем поток, нужен был только доступ
-                } catch (err) {
-                    console.log("Доступ к микрофону не предоставлен пользователем, но устройства загрузим.");
-                }
-
-                const devices = await navigator.mediaDevices.enumerateDevices();
-                
-                micSelect.innerHTML = '';
-                speakerSelect.innerHTML = '';
-
-                devices.forEach(device => {
-                    const option = document.createElement('option');
-                    option.value = device.deviceId;
-                    option.text = device.label || `${device.kind === 'audioinput' ? 'Микрофон' : 'Динамики'} (${device.deviceId.slice(0, 5)}...)`;
-                    
-                    if (device.kind === 'audioinput') {
-                        micSelect.appendChild(option);
-                    } else if (device.kind === 'audiooutput') {
-                        speakerSelect.appendChild(option);
-                    }
-                });
-
-                if (micSelect.options.length === 0) micSelect.innerHTML = '<option value="">По умолчанию (Системный)</option>';
-                if (speakerSelect.options.length === 0) speakerSelect.innerHTML = '<option value="">По умолчанию (Системный)</option>';
-            } catch (e) {
-                micSelect.innerHTML = '<option value="">По умолчанию (Микрофон)</option>';
-                speakerSelect.innerHTML = '<option value="">По умолчанию (Динамики)</option>';
+            if (targetUser === currentUser) {
+                friendMsgStatus.innerText = "Нельзя добавить самого себя!";
+                return;
             }
+
+            let usersDb = getUsersDb();
+            if (!usersDb[targetUser]) {
+                friendMsgStatus.innerText = "Пользователь не найден!";
+                return;
+            }
+
+            let social = getSocialDb();
+            if (!social[currentUser]) social[currentUser] = { friends: [], incomingRequests: [], outgoingRequests: [] };
+            if (!social[targetUser]) social[targetUser] = { friends: [], incomingRequests: [], outgoingRequests: [] };
+
+            // Проверки
+            if (social[currentUser].friends.includes(targetUser)) {
+                friendMsgStatus.innerText = "Вы уже в друзьях!";
+                return;
+            }
+            if (social[currentUser].outgoingRequests.includes(targetUser)) {
+                friendMsgStatus.innerText = "Заявка уже отправлена!";
+                return;
+            }
+
+            // Добавляем в исходящие тебе и во входящие ему
+            social[currentUser].outgoingRequests.push(targetUser);
+            social[targetUser].incomingRequests.push(currentUser);
+
+            setSocialDb(social);
+            addFriendInput.value = "";
+            friendMsgStatus.innerText = "Заявка успешно отправлена!";
+            renderFriendsPanel();
+        });
+
+        function renderFriendsPanel() {
+            const content = document.getElementById('friendsPanelContent');
+            let social = getSocialDb();
+            let myData = social[currentUser] || { friends: [], incomingRequests: [], outgoingRequests: [] };
+
+            let html = '';
+
+            // 1. Входящие заявки
+            html += `<div class="friend-section-title">Входящие заявки (${myData.incomingRequests.length})</div>`;
+            if (myData.incomingRequests.length === 0) {
+                html += `<p style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">Нет новых заявок</p>`;
+            } else {
+                myData.incomingRequests.forEach(fromUser => {
+                    html += `
+                        <div class="list-card" style="justify-content:space-between;">
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <div class="avatar" style="width:32px;height:32px;font-size:12px;">${fromUser.charAt(0).toUpperCase()}</div>
+                                <span style="font-size:13px; font-weight:600;">@${fromUser}</span>
+                            </div>
+                            <div style="display:flex; gap:6px;">
+                                <button class="mini-action-btn" onclick="acceptRequest('${fromUser}')">Принять</button>
+                                <button class="mini-action-btn decline" onclick="rejectRequest('${fromUser}')">Х</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            // 2. Исходящие заявки
+            html += `<div class="friend-section-title">Ожидающие отправленные (${myData.outgoingRequests.length})</div>`;
+            if (myData.outgoingRequests.length === 0) {
+                html += `<p style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">Нет активных исходящих</p>`;
+            } else {
+                myData.outgoingRequests.forEach(toUser => {
+                    html += `
+                        <div class="list-card" style="justify-content:space-between;">
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <div class="avatar" style="width:32px;height:32px;font-size:12px;">${toUser.charAt(0).toUpperCase()}</div>
+                                <span style="font-size:13px; font-weight:600;">@${toUser}</span>
+                            </div>
+                            <span style="font-size:11px; color:var(--text-muted);">Ожидание...</span>
+                        </div>
+                    `;
+                });
+            }
+
+            // 3. Список друзей
+            html += `<div class="friend-section-title">Список друзей (${myData.friends.length})</div>`;
+            if (myData.friends.length === 0) {
+                html += `<p style="font-size:12px; color:var(--text-muted);">Пока нет друзей</p>`;
+            } else {
+                myData.friends.forEach(friend => {
+                    html += `
+                        <div class="list-card">
+                            <div class="avatar online" style="width:36px;height:36px;font-size:13px;">${friend.charAt(0).toUpperCase()}</div>
+                            <div style="flex:1;">
+                                <h4 style="font-size:13px; color:#fff;">@${friend}</h4>
+                                <p style="font-size:11px; color:#00ff66;">В сети</p>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            content.innerHTML = html;
+        }
+
+        window.acceptRequest = function(fromUser) {
+            let social = getSocialDb();
+            let myData = social[currentUser];
+            let senderData = social[fromUser];
+
+            // Удаляем из входящих у меня, добавляем в друзья обоим
+            myData.incomingRequests = myData.incomingRequests.filter(u => u !== fromUser);
+            myData.friends.push(fromUser);
+
+            // Удаляем из исходящих у него, добавляем в друзья ему
+            if(senderData) {
+                senderData.outgoingRequests = senderData.outgoingRequests.filter(u => u !== currentUser);
+                senderData.friends.push(currentUser);
+            }
+
+            setSocialDb(social);
+            renderFriendsPanel();
+        }
+
+        window.rejectRequest = function(fromUser) {
+            let social = getSocialDb();
+            let myData = social[currentUser];
+            let senderData = social[fromUser];
+
+            myData.incomingRequests = myData.incomingRequests.filter(u => u !== fromUser);
+            if(senderData) {
+                senderData.outgoingRequests = senderData.outgoingRequests.filter(u => u !== currentUser);
+            }
+
+            setSocialDb(social);
+            renderFriendsPanel();
         }
 
         // Навигация по вкладкам
@@ -495,7 +573,6 @@
 
         const panelChats = document.getElementById('panelChats');
         const panelFriends = document.getElementById('panelFriends');
-
         const viewChat = document.getElementById('viewChat');
         const viewSettings = document.getElementById('viewSettings');
 
@@ -521,6 +598,7 @@
             navFriends.classList.add('active');
             panelFriends.classList.add('active');
             viewChat.classList.add('active');
+            renderFriendsPanel();
         });
 
         navSettings.addEventListener('click', () => {
@@ -529,7 +607,7 @@
             viewSettings.classList.add('active');
         });
 
-        // Отправка сообщений в чате
+        // Отправка сообщений
         const input = document.getElementById('userInput');
         const sendBtn = document.getElementById('sendBtn');
         const container = document.getElementById('messageContainer');
@@ -547,6 +625,29 @@
 
         sendBtn.addEventListener('click', sendMessage);
         input.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+
+        async function loadAudioDevices() {
+            const micSelect = document.getElementById('audioInputSelect');
+            const speakerSelect = document.getElementById('audioOutputSelect');
+            try {
+                if (!navigator.mediaDevices?.enumerateDevices) return;
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    stream.getTracks().forEach(track => track.stop());
+                } catch(e) {}
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                micSelect.innerHTML = ''; speakerSelect.innerHTML = '';
+                devices.forEach(device => {
+                    const option = document.createElement('option');
+                    option.value = device.deviceId;
+                    option.text = device.label || `${device.kind === 'audioinput' ? 'Микрофон' : 'Динамики'} (${device.deviceId.slice(0, 5)}...)`;
+                    if (device.kind === 'audioinput') micSelect.appendChild(option);
+                    else if (device.kind === 'audiooutput') speakerSelect.appendChild(option);
+                });
+                if (!micSelect.options.length) micSelect.innerHTML = '<option value="">По умолчанию</option>';
+                if (!speakerSelect.options.length) speakerSelect.innerHTML = '<option value="">По умолчанию</option>';
+            } catch (e) {}
+        }
     </script>
 </body>
 </html>
