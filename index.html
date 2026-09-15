@@ -77,7 +77,6 @@
         .icon-btn:hover { border-color: var(--active-color); background: var(--bg-hover); }
         .icon-btn svg { width: 18px; height: 18px; fill: var(--text-main); }
 
-        /* ВЫПАДАЮЩЕЕ МЕНЮ ТРИ ТОЧКИ */
         .dropdown-menu { position: absolute; top: 65px; right: 20px; width: 220px; background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 14px; box-shadow: 0 15px 35px rgba(0,0,0,0.8); z-index: 100; display: none; flex-direction: column; overflow: hidden; padding: 6px; }
         .dropdown-item { padding: 10px 14px; font-size: 13px; color: #fff; cursor: pointer; border-radius: 8px; transition: 0.2s; display: flex; align-items: center; gap: 8px; }
         .dropdown-item:hover { background: var(--bg-hover); color: var(--active-color); }
@@ -93,7 +92,6 @@
         .send-btn { background: var(--active-color); border: none; width: 48px; height: 48px; border-radius: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .send-btn svg { fill: #fff; width: 18px; height: 18px; }
 
-        /* МОДАЛЬНЫЕ ОКНА */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 2000; display: none; justify-content: center; align-items: center; }
         .modal-card { width: 440px; background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 20px; padding: 25px; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 20px 40px rgba(0,0,0,0.8); max-height: 90vh; overflow-y: auto; }
         .modal-card h3 { font-size: 18px; color: #fff; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
@@ -101,14 +99,12 @@
         .modal-row label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
         .modal-select, .modal-input { padding: 10px 14px; background: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 10px; color: #fff; font-size: 13px; outline: none; width: 100%; }
 
-        /* КАСТОМНЫЙ ПОПАП */
         .custom-popup-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); backdrop-filter: blur(6px); z-index: 3000; display: none; justify-content: center; align-items: center; }
         .custom-popup-card { width: 380px; background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 20px; padding: 25px; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 25px 50px rgba(0,0,0,0.9), 0 0 20px var(--active-glow); text-align: center; }
         .custom-popup-card h4 { font-size: 18px; color: #fff; }
         .custom-popup-card p { font-size: 13px; color: var(--text-muted); line-height: 1.4; }
         .custom-popup-btns { display: flex; gap: 10px; margin-top: 5px; }
 
-        /* ЭКРАН ЗВОНКА С ВИДЕО */
         .call-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #050505; z-index: 50; display: none; flex-direction: column; justify-content: space-between; padding: 30px; }
         .call-screen.active { display: flex; }
         .call-videos-grid { flex: 1; display: grid; grid-template-columns: 1fr; gap: 20px; justify-items: center; align-items: center; position: relative; }
@@ -121,7 +117,6 @@
         .call-btn.off svg { fill: #ff3333; }
         .call-btn.hangup { background: #ff3333; border-color: #ff3333; }
 
-        /* НАСТРОЙКИ */
         .settings-container-pane { padding: 35px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 20px; max-width: 950px; }
         .setting-section-title { font-size: 12px; text-transform: uppercase; color: var(--active-color); letter-spacing: 1px; margin-top: 10px; font-weight: 700; }
         .setting-item-row { display: flex; justify-content: space-between; align-items: center; background: var(--bg-panel); border: 1px solid var(--border-color); padding: 16px 20px; border-radius: 14px; gap: 20px; }
@@ -140,7 +135,6 @@
 </head>
 <body>
 
-    <!-- КАСТОМНЫЙ ПОПАП -->
     <div class="custom-popup-overlay" id="customPopup">
         <div class="custom-popup-card">
             <h4 id="popupTitle">Внимание</h4>
@@ -151,7 +145,6 @@
         </div>
     </div>
 
-    <!-- ОКНО АВТОРИЗАЦИИ / БАНА -->
     <div class="auth-overlay" id="authOverlay">
         <div class="auth-card">
             <div class="auth-logo-container"><div class="nav-logo" style="margin:0;">M</div></div>
@@ -176,7 +169,6 @@
         </div>
     </div>
 
-    <!-- МОДАЛЬНОЕ ОКНО АДМИНКИ -->
     <div class="modal-overlay" id="chatAdminModal">
         <div class="modal-card">
             <h3 id="modalTargetTitle">Управление пользователем</h3>
@@ -195,7 +187,6 @@
                 <div id="modalSessionsList" style="display:flex; flex-direction:column; gap:6px; max-height:100px; overflow-y:auto;"></div>
             </div>
 
-            <!-- БЛОК БАНА С НАСТРОЙКОЙ СРОКА И ПРИЧИНЫ -->
             <div class="modal-row" id="banActionSection" style="display:none; margin-top:5px; border-top:1px solid var(--border-color); padding-top:10px;">
                 <label style="color:#ff3333; font-weight:700;">Параметры блокировки</label>
                 <input type="text" class="modal-input" id="banReasonInput" placeholder="Причина бана (обязательно)" style="margin-top:4px;">
@@ -224,7 +215,6 @@
         </div>
     </div>
 
-    <!-- ИНТЕРФЕЙС ПРИЛОЖЕНИЯ -->
     <div class="app-window" id="appWindow">
         <nav class="nav-sidebar">
             <div class="nav-logo" id="userLogoBadge" title="Профиль">M</div>
@@ -239,14 +229,12 @@
             </button>
         </nav>
 
-        <!-- ПАНЕЛЬ ЧАТОВ -->
         <div class="sidebar-panel active" id="panelChats">
             <div class="panel-header">Сообщения</div>
             <div class="search-box"><input type="text" id="chatSearchInput" placeholder="Поиск чатов..."></div>
             <div class="panel-scroll-content" id="chatsListContainer"></div>
         </div>
 
-        <!-- ПАНЕЛЬ КОНТАКТОВ -->
         <div class="sidebar-panel" id="panelFriends">
             <div class="panel-header">Контакты</div>
             <div class="search-box"><input type="text" id="addFriendInput" placeholder="Добавить по юзернейму..."></div>
@@ -257,7 +245,6 @@
             <div class="panel-scroll-content" id="friendsPanelContent"></div>
         </div>
 
-        <!-- ОСНОВНАЯ ОБЛАСТЬ -->
         <main class="main-content-area">
             <div class="content-view active" id="viewChat">
                 <div class="view-header">
@@ -272,11 +259,9 @@
                         <button class="icon-btn" id="openChatAdminModalBtn" title="Управление пользователем" style="display:none;"><svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg></button>
                         <button class="icon-btn" id="startAudioCallBtn" title="Аудиозвонок"><svg viewBox="0 0 24 24"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.75 0 .99-.65.99-1.19v-3.44c0-.54-.45-.99-.99-.99z"/></svg></button>
                         <button class="icon-btn" id="startVideoCallBtn" title="Видеозвонок"><svg viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg></button>
-                        <!-- Кнопка три точки для меню чата -->
                         <button class="icon-btn" id="chatOptionsMenuBtn" title="Меню чата"><svg viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg></button>
                     </div>
 
-                    <!-- Выпадающее меню чата -->
                     <div class="dropdown-menu" id="chatDropdownMenu">
                         <div class="dropdown-item" id="menuClearChat">🧹 Очистить чат</div>
                         <div class="dropdown-item danger" id="menuDeleteChat">🗑️ Удалить чат</div>
@@ -293,7 +278,6 @@
                 </div>
             </div>
 
-            <!-- ЭКРАН ЗВОНКА -->
             <div class="call-screen" id="callScreen">
                 <div style="display:flex; justify-content:space-between; align-items:center; color:#fff;">
                     <h3 id="callTitle">Звонок с пользователем</h3>
@@ -313,7 +297,6 @@
                 </div>
             </div>
 
-            <!-- НАСТРОЙКИ -->
             <div class="content-view" id="viewSettings">
                 <div class="settings-container-pane">
                     <h2 style="font-size: 22px; color: #fff;">Настройки профиля</h2>
@@ -362,6 +345,7 @@
         let activeChatUser = null;
         let currentSessionId = 'sess_' + Math.random().toString(36).substring(7);
         let callRingtoneInterval = null;
+        let activeCallId = null;
 
         function showCustomPopup(title, text, onOk = null) {
             const popup = document.getElementById('customPopup');
@@ -440,6 +424,8 @@
         function setRolesDb(db) { localStorage.setItem('mixxi_roles_db', JSON.stringify(db)); }
         function getLastSeenDb() { return JSON.parse(localStorage.getItem('mixxi_lastseen_db') || '{}'); }
         function setLastSeenDb(db) { localStorage.setItem('mixxi_lastseen_db', JSON.stringify(db)); }
+        function getCallsDb() { return JSON.parse(localStorage.getItem('mixxi_calls_db') || '{}'); }
+        function setCallsDb(db) { localStorage.setItem('mixxi_calls_db', JSON.stringify(db)); }
 
         setInterval(() => {
             if (!currentUser) return;
@@ -555,16 +541,29 @@
                 profiles[user] = { displayName: user, avatar: '' };
                 setProfilesDb(profiles);
 
+                let socialDb = getSocialDb();
                 let userSocial = { friends: [], incomingRequests: [], outgoingRequests: [] };
+                
                 if (user !== 'mixxi') {
                     userSocial.friends.push('mixxi');
                 }
-                let socialDb = getSocialDb();
                 socialDb[user] = userSocial;
 
                 if (user !== 'mixxi') {
                     if (!socialDb['mixxi']) socialDb['mixxi'] = { friends: [], incomingRequests: [], outgoingRequests: [] };
-                    if (!socialDb['mixxi'].friends.includes(user)) socialDb['mixxi'].friends.push(user);
+                    if (!socialDb['mixxi'].friends.includes(user)) {
+                        socialDb['mixxi'].friends.push(user);
+                    }
+
+                    let messagesDb = getMessagesDb();
+                    let chatKey = getChatKey(user, 'mixxi');
+                    messagesDb[chatKey] = [
+                        {
+                            sender: 'mixxi',
+                            text: 'Я создатель! Пишите сюда по поводу ошибок, ложных банов и т. д.\n\n⚠️ Информация по банам:\n• Если аккаунт заблокирован системой автоматической защиты или модератором, обязательно напишите сюда.\n• Если бан выдан по ошибке — я всё перепроверю и решу проблему.'
+                        }
+                    ];
+                    setMessagesDb(messagesDb);
                 }
                 setSocialDb(socialDb);
 
@@ -606,7 +605,6 @@
             return roles[username] || 'user';
         }
 
-        // Сохранение профиля
         document.getElementById('saveProfileBtn').addEventListener('click', () => {
             const newName = document.getElementById('settingsDisplayNameInput').value.trim();
             const fileInput = document.getElementById('avatarFileInput');
@@ -641,7 +639,6 @@
             renderChatsList(); renderFriendsPanel();
         }
 
-        // Смена пароля
         document.getElementById('changePasswordBtn').addEventListener('click', () => {
             const oldPass = document.getElementById('oldPasswordInput').value.trim();
             const newPass = document.getElementById('newPasswordInput').value.trim();
@@ -661,7 +658,6 @@
             showCustomPopup("Успешно", "Пароль успешно изменен!");
         });
 
-        // Кнопка выхода из аккаунта
         document.getElementById('logoutAccountBtn').addEventListener('click', () => {
             showCustomPopup("Выход из аккаунта", "Вы действительно хотите выйти?", () => {
                 let sessions = getSessionsDb();
@@ -768,7 +764,6 @@
             loadMessages();
         }
 
-        // Логика выпадающего меню чата (три точки)
         const chatOptionsMenuBtn = document.getElementById('chatOptionsMenuBtn');
         const chatDropdownMenu = document.getElementById('chatDropdownMenu');
 
@@ -781,7 +776,6 @@
             chatDropdownMenu.style.display = 'none';
         });
 
-        // Очистить чат
         document.getElementById('menuClearChat').addEventListener('click', () => {
             if (!activeChatUser) return;
             showCustomPopup("Очистить чат", "Вы действительно хотите удалить всю историю сообщений в этом чате?", () => {
@@ -793,7 +787,6 @@
             });
         });
 
-        // Удалить чат
         document.getElementById('menuDeleteChat').addEventListener('click', () => {
             if (!activeChatUser) return;
             showCustomPopup("Удалить чат", `Удалить чат с пользователем @${activeChatUser}? Он пропадет из списка ваших чатов.`, () => {
@@ -818,7 +811,6 @@
             });
         });
 
-        // Заблокировать пользователя
         document.getElementById('menuBlockUser').addEventListener('click', () => {
             if (!activeChatUser) return;
             let target = activeChatUser;
@@ -941,7 +933,6 @@
             showCustomPopup("Роль изменена", `Роль @${activeChatUser} изменена на: ${newRole}`);
         });
 
-        // Бан с учетом причины, галочки "навсегда" и сроков
         document.getElementById('modalBanBtn').addEventListener('click', () => {
             let myRole = getUserRole(currentUser);
             if (myRole === 'user' || myRole === 'moderator') return;
@@ -1040,40 +1031,118 @@
         sendBtn.addEventListener('click', sendMessage);
         input.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
 
+        // === ИСПРАВЛЕННАЯ СИСТЕМА ЗВОНКОВ ===
         let localStream = null;
         const callScreen = document.getElementById('callScreen');
         const localVideo = document.getElementById('localVideo');
         const callPlaceholderAvatar = document.getElementById('callPlaceholderAvatar');
         const callTitle = document.getElementById('callTitle');
+        const callStatusTimer = document.getElementById('callStatusTimer');
 
         let isMicMuted = false;
         let isVideoOff = true;
         let isScreenSharing = false;
 
-        document.getElementById('startAudioCallBtn').addEventListener('click', () => startCall(false));
-        document.getElementById('startVideoCallBtn').addEventListener('click', () => startCall(true));
+        document.getElementById('startAudioCallBtn').addEventListener('click', () => initiateCall(false));
+        document.getElementById('startVideoCallBtn').addEventListener('click', () => initiateCall(true));
 
-        async function startCall(withVideo) {
+        async function initiateCall(withVideo) {
             if (!activeChatUser) return;
+            let callId = 'call_' + Date.now();
+            activeCallId = callId;
+
+            let calls = getCallsDb();
+            calls[activeCallId] = {
+                caller: currentUser,
+                receiver: activeChatUser,
+                withVideo: withVideo,
+                status: 'ringing', // ringing, accepted, declined, ended
+                timestamp: Date.now()
+            };
+            setCallsDb(calls);
+
             callScreen.classList.add('active');
             let profiles = getProfilesDb();
             let dName = profiles[activeChatUser]?.displayName || activeChatUser;
             callTitle.innerText = withVideo ? `Видеозвонок с ${dName}` : `Аудиозвонок с ${dName}`;
             callPlaceholderAvatar.innerText = dName.charAt(0).toUpperCase();
+            callStatusTimer.innerText = "Вызов...";
+
+            playDiscordRingTone();
+        }
+
+        // Проверка входящих звонков каждые 1 секунду
+        setInterval(async () => {
+            if (!currentUser) return;
+            let calls = getCallsDb();
+
+            // 1. Если мы звоним кому-то — проверяем, ответил ли собеседник
+            if (activeCallId && calls[activeCallId]) {
+                let call = calls[activeCallId];
+                if (call.status === 'accepted' && callScreen.classList.contains('active')) {
+                    callStatusTimer.innerText = "Идет разговор";
+                    stopDiscordRingTone();
+                } else if (call.status === 'declined') {
+                    stopDiscordRingTone();
+                    showCustomPopup("Звонок", "Собеседник отклонил звонок.");
+                    hangupCall(false);
+                } else if (call.status === 'ended') {
+                    stopDiscordRingTone();
+                    hangupCall(false);
+                }
+            }
+
+            // 2. Если нам поступает входящий звонок
+            let incomingCallKey = Object.keys(calls).find(k => {
+                let c = calls[k];
+                return c.receiver === currentUser && c.status === 'ringing' && (Date.now() - c.timestamp < 30000);
+            });
+
+            if (incomingCallKey && !activeCallId && !callScreen.classList.contains('active')) {
+                let call = calls[incomingCallKey];
+                let profiles = getProfilesDb();
+                let callerName = profiles[call.caller]?.displayName || call.caller;
+
+                playDiscordRingTone();
+                showCustomPopup("Входящий звонок", `Вам звонит @${callerName} (${call.withVideo ? 'Видеозвонок' : 'Аудиозвонок'})`, () => {
+                    // Принять звонок
+                    stopDiscordRingTone();
+                    activeCallId = incomingCallKey;
+                    calls[incomingCallKey].status = 'accepted';
+                    setCallsDb(calls);
+                    answerCall(call.withVideo, call.caller);
+                });
+
+                // Перехватим кнопку отмены в попапе чтобы сбросить входящий
+                let cancelBtn = document.getElementById('popupCancelBtn');
+                if (cancelBtn) {
+                    cancelBtn.onclick = () => {
+                        stopDiscordRingTone();
+                        document.getElementById('customPopup').style.display = 'none';
+                        calls[incomingCallKey].status = 'declined';
+                        setCallsDb(calls);
+                    };
+                }
+            }
+        }, 1000);
+
+        async function answerCall(withVideo, callerUsername) {
+            callScreen.classList.add('active');
+            let profiles = getProfilesDb();
+            let dName = profiles[callerUsername]?.displayName || callerUsername;
+            callTitle.innerText = withVideo ? `Видеозвонок с ${dName}` : `Аудиозвонок с ${dName}`;
+            callPlaceholderAvatar.innerText = dName.charAt(0).toUpperCase();
+            callStatusTimer.innerText = "Идет разговор";
 
             isVideoOff = !withVideo;
-            playDiscordRingTone();
-
             try {
                 localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: withVideo });
-                stopDiscordRingTone();
                 if (withVideo) {
                     localVideo.srcObject = localStream;
                     localVideo.style.display = 'block';
                     callPlaceholderAvatar.style.display = 'none';
                 }
             } catch(e) {
-                stopDiscordRingTone();
                 showCustomPopup("Ошибка", "Не удалось получить доступ к камере или микрофону!");
             }
         }
@@ -1087,11 +1156,8 @@
 
         document.getElementById('toggleVideoBtn').addEventListener('click', async () => {
             isVideoOff = !isVideoOff;
-            
             if (isVideoOff) {
-                if (localStream) {
-                    localStream.getVideoTracks().forEach(t => t.stop());
-                }
+                if (localStream) localStream.getVideoTracks().forEach(t => t.stop());
                 localVideo.srcObject = null;
                 localVideo.style.display = 'none';
                 callPlaceholderAvatar.style.display = 'flex';
@@ -1135,8 +1201,16 @@
             }
         });
 
-        document.getElementById('hangupBtn').addEventListener('click', () => {
+        function hangupCall(updateDb = true) {
             stopDiscordRingTone();
+            if (activeCallId && updateDb) {
+                let calls = getCallsDb();
+                if (calls[activeCallId]) {
+                    calls[activeCallId].status = 'ended';
+                    setCallsDb(calls);
+                }
+            }
+            activeCallId = null;
             if (localStream) {
                 localStream.getTracks().forEach(t => t.stop());
                 localStream = null;
@@ -1144,7 +1218,9 @@
             localVideo.srcObject = null;
             callScreen.classList.remove('active');
             isMicMuted = false; isVideoOff = true; isScreenSharing = false;
-        });
+        }
+
+        document.getElementById('hangupBtn').addEventListener('click', () => hangupCall(true));
 
         const navChats = document.getElementById('navChats');
         const navFriends = document.getElementById('navFriends');
@@ -1236,7 +1312,7 @@
         window.rejectReq = function(fromUser) {
             let social = getSocialDb();
             social[currentUser].incomingRequests = social[currentUser].incomingRequests.filter(u => u !== fromUser);
-            if(social[fromUser]) social[fromUser].outgoingRequests = social[fromUser].outgoingRequests.filter(u => u !== currentUser);
+            if(social[fromUser]) social[fromUser].source = social[fromUser].outgoingRequests.filter(u => u !== currentUser);
             setSocialDb(social); renderFriendsPanel();
         }
 
