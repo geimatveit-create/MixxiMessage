@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Mixxi Messenger Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -21,8 +21,8 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; user-select: none; }
         body { background-color: var(--bg-darker); color: var(--text-main); height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; background-image: radial-gradient(circle at 50% 20%, #1f0e06 0%, var(--bg-darker) 70%); }
 
-        .auth-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(5, 5, 5, 0.92); backdrop-filter: blur(12px); z-index: 1000; display: flex; justify-content: center; align-items: center; }
-        .auth-card { width: 420px; background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 24px; padding: 40px; box-shadow: 0 30px 60px rgba(0,0,0,0.9), 0 0 40px var(--active-glow); display: flex; flex-direction: column; gap: 20px; }
+        .auth-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(5, 5, 5, 0.92); backdrop-filter: blur(12px); z-index: 1000; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        .auth-card { width: 100%; max-width: 420px; background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 24px; padding: 30px; box-shadow: 0 30px 60px rgba(0,0,0,0.9), 0 0 40px var(--active-glow); display: flex; flex-direction: column; gap: 20px; }
         .auth-logo-container { display: flex; justify-content: center; margin-bottom: 5px; }
         .auth-card h2 { font-size: 24px; color: #fff; text-align: center; font-weight: 700; }
         .auth-card p { font-size: 13px; color: var(--text-muted); text-align: center; margin-top: -10px; line-height: 1.4; }
@@ -77,30 +77,32 @@
         .icon-btn:hover { border-color: var(--active-color); background: var(--bg-hover); }
         .icon-btn svg { width: 18px; height: 18px; fill: var(--text-main); }
 
+        .back-to-chats-btn { display: none; background: var(--bg-dark); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 10px; color: #fff; font-size: 12px; cursor: pointer; align-items: center; gap: 6px; }
+
         .dropdown-menu { position: absolute; top: 65px; right: 20px; width: 220px; background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 14px; box-shadow: 0 15px 35px rgba(0,0,0,0.8); z-index: 100; display: none; flex-direction: column; overflow: hidden; padding: 6px; }
         .dropdown-item { padding: 10px 14px; font-size: 13px; color: #fff; cursor: pointer; border-radius: 8px; transition: 0.2s; display: flex; align-items: center; gap: 8px; }
         .dropdown-item:hover { background: var(--bg-hover); color: var(--active-color); }
         .dropdown-item.danger:hover { background: #331111; color: #ff3333; }
 
         .chat-messages { flex: 1; padding: 28px; overflow-y: auto; display: flex; flex-direction: column; gap: 18px; }
-        .message { max-width: 60%; padding: 14px 18px; border-radius: 16px; font-size: 14px; line-height: 1.5; word-break: break-word; }
+        .message { max-width: 75%; padding: 14px 18px; border-radius: 16px; font-size: 14px; line-height: 1.5; word-break: break-word; }
         .message.incoming { background: var(--bg-panel); border: 1px solid var(--border-color); align-self: flex-start; color: #dedede; }
         .message.outgoing { background: linear-gradient(135deg, #ff5500, #e04800); color: #fff; align-self: flex-end; }
 
         .chat-input-area { padding: 20px 28px; background: var(--bg-panel); border-top: 1px solid var(--border-color); display: flex; gap: 14px; align-items: center; }
         .chat-input-area input { flex: 1; padding: 14px 20px; background: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 14px; color: #fff; font-size: 14px; outline: none; }
-        .send-btn { background: var(--active-color); border: none; width: 48px; height: 48px; border-radius: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .send-btn { background: var(--active-color); border: none; width: 48px; height: 48px; border-radius: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .send-btn svg { fill: #fff; width: 18px; height: 18px; }
 
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 2000; display: none; justify-content: center; align-items: center; }
-        .modal-card { width: 460px; background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 20px; padding: 25px; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 20px 40px rgba(0,0,0,0.8); max-height: 90vh; overflow-y: auto; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 2000; display: none; justify-content: center; align-items: center; padding: 20px; }
+        .modal-card { width: 100%; max-width: 460px; background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 20px; padding: 25px; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 20px 40px rgba(0,0,0,0.8); max-height: 90vh; overflow-y: auto; }
         .modal-card h3 { font-size: 18px; color: #fff; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
         .modal-row { display: flex; flex-direction: column; gap: 6px; }
         .modal-row label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
         .modal-select, .modal-input { padding: 10px 14px; background: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 10px; color: #fff; font-size: 13px; outline: none; width: 100%; }
 
-        .custom-popup-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); backdrop-filter: blur(6px); z-index: 3000; display: none; justify-content: center; align-items: center; }
-        .custom-popup-card { width: 380px; background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 20px; padding: 25px; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 25px 50px rgba(0,0,0,0.9), 0 0 20px var(--active-glow); text-align: center; }
+        .custom-popup-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); backdrop-filter: blur(6px); z-index: 3000; display: none; justify-content: center; align-items: center; padding: 20px; }
+        .custom-popup-card { width: 100%; max-width: 380px; background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 20px; padding: 25px; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 25px 50px rgba(0,0,0,0.9), 0 0 20px var(--active-glow); text-align: center; }
         .custom-popup-card h4 { font-size: 18px; color: #fff; }
         .custom-popup-card p { font-size: 13px; color: var(--text-muted); line-height: 1.4; }
         .custom-popup-btns { display: flex; gap: 10px; margin-top: 5px; }
@@ -110,7 +112,7 @@
         .call-videos-grid { flex: 1; display: grid; grid-template-columns: 1fr; gap: 20px; justify-items: center; align-items: center; position: relative; }
         .call-video-box { width: 100%; height: 100%; background: #111; border-radius: 20px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
         .call-video-box video { width: 100%; height: 100%; object-fit: cover; }
-        .call-controls { display: flex; justify-content: center; gap: 20px; padding: 20px; background: var(--bg-panel); border-radius: 20px; border: 1px solid var(--border-color); width: fit-content; margin: 0 auto; }
+        .call-controls { display: flex; justify-content: center; gap: 15px; padding: 15px; background: var(--bg-panel); border-radius: 20px; border: 1px solid var(--border-color); width: fit-content; margin: 0 auto; flex-wrap: wrap; }
         .call-btn { width: 52px; height: 52px; border-radius: 16px; border: none; background: var(--bg-dark); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; border: 1px solid var(--border-color); }
         .call-btn svg { width: 22px; height: 22px; fill: #fff; }
         .call-btn.off { background: #331111; border-color: #ff3333; }
@@ -131,6 +133,25 @@
         .mini-action-btn { background: var(--active-color); color: #fff; border: none; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer; }
         .mini-action-btn.decline { background: #333; color: #aaa; }
         .mini-action-btn:hover { filter: brightness(1.2); }
+
+        /* СТИЛИ МОБИЛЬНОЙ АДАПТАЦИИ (ОБНАРУЖЕНИЕ ТЕЛЕФОНА) */
+        body.is-mobile .app-window { width: 100vw; height: 100vh; border-radius: 0; border: none; }
+        body.is-mobile .nav-sidebar { width: 100%; height: 65px; flex-direction: row; justify-content: space-around; padding: 0 10px; border-right: none; border-top: 1px solid var(--border-color); order: 2; }
+        body.is-mobile .app-window { flex-direction: column; }
+        body.is-mobile .nav-logo { display: none; }
+        body.is-mobile .nav-item.active::before { display: none; }
+        body.is-mobile .nav-item { width: 40px; height: 40px; }
+        body.is-mobile .sidebar-panel { width: 100%; height: calc(100vh - 65px); position: absolute; top: 0; left: 0; z-index: 10; display: none; }
+        body.is-mobile .sidebar-panel.active { display: flex; }
+        body.is-mobile .main-content-area { width: 100%; height: calc(100vh - 65px); position: absolute; top: 0; left: 0; z-index: 5; display: none; }
+        body.is-mobile .content-view.active { display: flex; }
+        /* Мобильное поведение при открытом чате: скрываем панель чатов, показываем кнопку назад */
+        body.is-mobile.chat-opened .sidebar-panel { display: none !important; }
+        body.is-mobile.chat-opened .main-content-area { display: flex !important; z-index: 20; }
+        body.is-mobile .back-to-chats-btn { display: flex; }
+        body.is-mobile .settings-container-pane { padding: 20px; }
+        body.is-mobile .setting-item-row { flex-direction: column; align-items: flex-start; gap: 8px; }
+        body.is-mobile .settings-input { width: 100%; }
     </style>
 </head>
 <body>
@@ -169,12 +190,10 @@
         </div>
     </div>
 
-    <!-- МОДАЛЬНОЕ ОКНО УПРАВЛЕНИЯ ПОЛЬЗОВАТЕЛЕМ С 4 ВЫБОРАМИ -->
     <div class="modal-overlay" id="chatAdminModal">
         <div class="modal-card">
             <h3 id="modalTargetTitle">Управление пользователем</h3>
             
-            <!-- ВЫБОР 1: Назначить роль (Только для Админов/Создателя) -->
             <div class="modal-row admin-exclusive-section" id="roleChangeSection" style="display:none;">
                 <label style="color:var(--active-color); font-weight:700;">1. Назначить роль</label>
                 <div style="display:flex; gap:8px; margin-top:4px;">
@@ -187,13 +206,11 @@
                 </div>
             </div>
 
-            <!-- ВЫБОР 2: Кик активных сессий (Доступно модераторам и админам) -->
             <div class="modal-row" id="sessionsActionSection">
                 <label style="color:#fff; font-weight:700;">2. Кикнуть активные сессии</label>
                 <div id="modalSessionsList" style="display:flex; flex-direction:column; gap:6px; max-height:110px; overflow-y:auto; margin-top:4px;"></div>
             </div>
 
-            <!-- ВЫБОР 3: Параметры блокировки / Бан (Только для Админов) -->
             <div class="modal-row admin-exclusive-section" id="banActionSection" style="display:none; border-top:1px solid var(--border-color); padding-top:10px;">
                 <label style="color:#ff3333; font-weight:700;">3. Параметры блокировки (Бан)</label>
                 <input type="text" class="modal-input" id="banReasonInput" placeholder="Причина бана (обязательно)" style="margin-top:4px;">
@@ -205,9 +222,9 @@
 
                 <div id="banDurationContainer" style="display:none; flex-direction:column; gap:8px; margin-top:8px; background:var(--bg-dark); padding:10px; border-radius:10px; border:1px solid var(--border-color);">
                     <div style="display:flex; gap:10px;">
-                        <div style="flex:1;"><label style="font-size:10px;">Дни (макс. 9000)</label><input type="number" class="modal-input" id="banDays" min="0" max="9000" value="0"></div>
-                        <div style="flex:1;"><label style="font-size:10px;">Часы (макс. 23)</label><input type="number" class="modal-input" id="banHours" min="0" max="23" value="0"></div>
-                        <div style="flex:1;"><label style="font-size:10px;">Мин. (макс. 59)</label><input type="number" class="modal-input" id="banMinutes" min="0" max="59" value="0"></div>
+                        <div style="flex:1;"><label style="font-size:10px;">Дни</label><input type="number" class="modal-input" id="banDays" min="0" max="9000" value="0"></div>
+                        <div style="flex:1;"><label style="font-size:10px;">Часы</label><input type="number" class="modal-input" id="banHours" min="0" max="23" value="0"></div>
+                        <div style="flex:1;"><label style="font-size:10px;">Мин.</label><input type="number" class="modal-input" id="banMinutes" min="0" max="59" value="0"></div>
                     </div>
                 </div>
 
@@ -218,7 +235,6 @@
                 <button class="success-btn" id="modalUnbanBtn" style="width:100%;">Разбанить пользователя</button>
             </div>
 
-            <!-- ВЫБОР 4: Удалить аккаунт навсегда (Опасная зона, только для Админов) -->
             <div class="modal-row admin-exclusive-section" id="deleteAccountSection" style="display:none; border-top:1px solid var(--border-color); padding-top:12px;">
                 <label style="color:#ff3333; font-weight:700;">4. Удалить аккаунт навсегда</label>
                 <p style="font-size:11px; color:var(--text-muted); margin-bottom:6px;">Полное стирание учетной записи и всех данных без возможности восстановления.</p>
@@ -263,6 +279,7 @@
             <div class="content-view active" id="viewChat">
                 <div class="view-header">
                     <div style="display:flex; align-items:center; gap:12px;">
+                        <button class="back-to-chats-btn" id="backToChatsBtn">← Назад</button>
                         <div class="avatar online" id="activeChatAvatar" style="width:38px;height:38px;font-size:13px;">M</div>
                         <div>
                             <h3 id="activeChatName" style="font-size:15px; color:#fff;">Выберите чат</h3>
@@ -328,7 +345,7 @@
                         <span id="settingsUsernameDisplay" style="color: var(--active-color); font-weight: 600;"></span>
                     </div>
                     
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 5px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 5px; flex-wrap: wrap; gap: 10px;">
                         <button class="danger-btn" id="logoutAccountBtn" style="background: #331111; color: #ff3333; border: 1px solid #ff3333;">Выйти из аккаунта</button>
                         <button class="auth-btn" id="saveProfileBtn" style="width: auto; padding: 10px 20px; margin:0;">Сохранить изменения</button>
                     </div>
@@ -354,6 +371,18 @@
     </div>
 
     <script>
+        // АВТОМАТИЧЕСКОЕ ОБНАРУЖЕНИЕ ТЕЛЕФОНА ИЛИ ПК
+        function detectDeviceAndApply() {
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
+            if (isMobile) {
+                document.body.classList.add('is-mobile');
+            } else {
+                document.body.classList.remove('is-mobile');
+            }
+        }
+        window.addEventListener('resize', detectDeviceAndApply);
+        detectDeviceAndApply();
+
         let isRegisterMode = false;
         let currentUser = null;
         let activeChatUser = null;
@@ -778,7 +807,6 @@
 
             let myRole = getUserRole(currentUser);
             let adminBtn = document.getElementById('openChatAdminModalBtn');
-            // Кнопка управления видна и админам, и модераторам
             adminBtn.style.display = (myRole === 'user') ? 'none' : 'flex';
 
             resetNav();
@@ -786,9 +814,18 @@
             document.getElementById('panelChats').classList.add('active');
             document.getElementById('viewChat').classList.add('active');
 
+            // Мобильная адаптация переключения на экран чата
+            if (document.body.classList.contains('is-mobile')) {
+                document.body.classList.add('chat-opened');
+            }
+
             renderChatsList();
             loadMessages();
         }
+
+        document.getElementById('backToChatsBtn').addEventListener('click', () => {
+            document.body.classList.remove('chat-opened');
+        });
 
         const chatOptionsMenuBtn = document.getElementById('chatOptionsMenuBtn');
         const chatDropdownMenu = document.getElementById('chatDropdownMenu');
@@ -832,6 +869,7 @@
                 document.getElementById('userInput').disabled = true;
                 document.getElementById('messageContainer').innerHTML = `<div class="message incoming">Выберите друга слева для начала общения! 🚀</div>`;
                 document.getElementById('openChatAdminModalBtn').style.display = 'none';
+                document.body.classList.remove('chat-opened');
                 
                 renderChatsList();
             });
@@ -856,11 +894,11 @@
                 document.getElementById('userInput').disabled = true;
                 document.getElementById('messageContainer').innerHTML = `<div class="message incoming">Пользователь заблокирован.</div>`;
                 document.getElementById('openChatAdminModalBtn').style.display = 'none';
+                document.body.classList.remove('chat-opened');
                 renderChatsList();
             });
         });
 
-        // --- ЛОГИКА МОДАЛЬНОГО ОКНА УПРАВЛЕНИЯ ПОЛЬЗОВАТЕЛЕМ (С 4 ВЫБОРАМИ И ПРАВАМИ) ---
         const chatAdminModal = document.getElementById('chatAdminModal');
         const banForeverCheckbox = document.getElementById('banForeverCheckbox');
         const banDurationContainer = document.getElementById('banDurationContainer');
@@ -876,7 +914,7 @@
             banForeverCheckbox.checked = true;
             banDurationContainer.style.display = 'none';
 
-            let myRole = getUserRole(currentUser); // owner, admin, moderator, user
+            let myRole = getUserRole(currentUser);
             let targetRole = getUserRole(activeChatUser);
             let bans = getBansDb();
             let isBanned = !!bans[activeChatUser];
@@ -886,16 +924,12 @@
             let unbanSection = document.getElementById('unbanActionSection');
             let deleteSection = document.getElementById('deleteAccountSection');
 
-            // Распределение прав согласно условию:
-            // "модеры могут только сесссии кикать, а админы ток блокать" (плюс админы/создатель могут назначать роли и удалять аккаунты)
             if (myRole === 'moderator') {
-                // Модератор видит ТОЛЬКО кик сессий
                 roleSection.style.display = 'none';
                 banSection.style.display = 'none';
                 unbanSection.style.display = 'none';
                 deleteSection.style.display = 'none';
             } else if (myRole === 'admin' || myRole === 'owner') {
-                // Администратор видит смену ролей, сессии, баны и удаление
                 roleSection.style.display = (myRole === 'owner' || targetRole !== 'admin') ? 'block' : 'none';
                 document.getElementById('modalRoleSelect').value = targetRole === 'owner' ? 'user' : targetRole;
                 
@@ -938,7 +972,6 @@
             container.innerHTML = html;
         }
 
-        // Выбор 2 с подтверждением "Вы точно хотите это сделать?"
         window.confirmKickSession = function(sId) {
             showCustomPopup("Подтверждение", "Вы точно хотите это сделать?", () => {
                 let sessions = getSessionsDb();
@@ -951,7 +984,6 @@
             });
         }
 
-        // Выбор 1 с подтверждением
         document.getElementById('modalSaveRoleBtn').addEventListener('click', () => {
             if (currentUser !== 'mixxi' && getUserRole(currentUser) !== 'admin') return;
             if (activeChatUser === 'mixxi') return;
@@ -965,7 +997,6 @@
             });
         });
 
-        // Выбор 3 (Бан) с подтверждением
         document.getElementById('modalBanBtn').addEventListener('click', () => {
             let myRole = getUserRole(currentUser);
             if (myRole === 'user' || myRole === 'moderator') return;
@@ -985,10 +1016,6 @@
                 let hours = parseInt(document.getElementById('banHours').value) || 0;
                 let minutes = parseInt(document.getElementById('banMinutes').value) || 0;
 
-                if (days > 9000) days = 9000;
-                if (hours > 23) hours = 23;
-                if (minutes > 59) minutes = 59;
-
                 let totalMs = (days * 24 * 60 + hours * 60 + minutes) * 60 * 1000;
                 if (totalMs <= 0) {
                     showCustomPopup("Ошибка", "Укажите срок бана больше 0 минут!");
@@ -999,11 +1026,7 @@
 
             showCustomPopup("Подтверждение", "Вы точно хотите это сделать?", () => {
                 let bans = getBansDb();
-                bans[activeChatUser] = {
-                    reason: reason,
-                    forever: forever,
-                    expiresAt: expiresAt
-                };
+                bans[activeChatUser] = { reason: reason, forever: forever, expiresAt: expiresAt };
                 setBansDb(bans);
                 
                 let sessions = getSessionsDb();
@@ -1011,7 +1034,7 @@
                 setSessionsDb(sessions);
 
                 chatAdminModal.style.display = 'none';
-                showCustomPopup("Заблокирован", `Пользователь @${activeChatUser} заблокирован. Все сессии завершены.`);
+                showCustomPopup("Заблокирован", `Пользователь @${activeChatUser} заблокирован.`);
             });
         });
 
@@ -1028,7 +1051,6 @@
             });
         });
 
-        // Выбор 4 (Удаление аккаунта навсегда) с подтверждением
         document.getElementById('modalDeleteAccountBtn').addEventListener('click', () => {
             let myRole = getUserRole(currentUser);
             if (myRole !== 'owner' && myRole !== 'admin') return;
@@ -1040,27 +1062,22 @@
             showCustomPopup("ВНИМАНИЕ", "Вы точно хотите это сделать? Аккаунт будет полностью стерт навсегда!", () => {
                 let target = activeChatUser;
                 
-                // Удаляем из базы пользователей
                 let usersDb = getUsersDb();
                 delete usersDb[target];
                 setUsersDb(usersDb);
 
-                // Удаляем профиль
                 let profiles = getProfilesDb();
                 delete profiles[target];
                 setProfilesDb(profiles);
 
-                // Удаляем сессии
                 let sessions = getSessionsDb();
                 delete sessions[target];
                 setSessionsDb(sessions);
 
-                // Удаляем баны
                 let bans = getBansDb();
                 delete bans[target];
                 setBansDb(bans);
 
-                // Удаляем из соц. связей и друзей
                 let social = getSocialDb();
                 delete social[target];
                 Object.keys(social).forEach(u => {
@@ -1079,6 +1096,7 @@
                 document.getElementById('userInput').disabled = true;
                 document.getElementById('messageContainer').innerHTML = `<div class="message incoming">Аккаунт пользователя был полностью удален.</div>`;
                 document.getElementById('openChatAdminModalBtn').style.display = 'none';
+                document.body.classList.remove('chat-opened');
                 renderChatsList();
 
                 showCustomPopup("Успешно", "Аккаунт пользователя полностью стерт из системы.");
@@ -1125,7 +1143,6 @@
         sendBtn.addEventListener('click', sendMessage);
         input.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
 
-        // --- СИСТЕМА ЗВОНКОВ ---
         let localStream = null;
         const callScreen = document.getElementById('callScreen');
         const localVideo = document.getElementById('localVideo');
@@ -1325,9 +1342,9 @@
             viewChat.classList.remove('active'); viewSettings.classList.remove('active');
         }
 
-        navChats.addEventListener('click', () => { resetNav(); navChats.classList.add('active'); panelChats.classList.add('active'); viewChat.classList.add('active'); renderChatsList(); });
-        navFriends.addEventListener('click', () => { resetNav(); navFriends.classList.add('active'); panelFriends.classList.add('active'); viewChat.classList.add('active'); renderFriendsPanel(); });
-        navSettings.addEventListener('click', () => { resetNav(); navSettings.classList.add('active'); viewSettings.classList.add('active'); renderSessionsList(); });
+        navChats.addEventListener('click', () => { resetNav(); navChats.classList.add('active'); panelChats.classList.add('active'); viewChat.classList.add('active'); renderChatsList(); document.body.classList.remove('chat-opened'); });
+        navFriends.addEventListener('click', () => { resetNav(); navFriends.classList.add('active'); panelFriends.classList.add('active'); viewChat.classList.add('active'); renderFriendsPanel(); document.body.classList.remove('chat-opened'); });
+        navSettings.addEventListener('click', () => { resetNav(); navSettings.classList.add('active'); viewSettings.classList.add('active'); renderSessionsList(); document.body.classList.remove('chat-opened'); });
 
         document.getElementById('sendRequestBtn').addEventListener('click', () => {
             const targetUser = document.getElementById('addFriendInput').value.trim().toLowerCase();
